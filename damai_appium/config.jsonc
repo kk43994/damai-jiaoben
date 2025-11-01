@@ -1,13 +1,10 @@
 {
   "server_url": "http://127.0.0.1:4723",
-  "keyword": "周深",
-  "users": [
-    "王胜",
-    "潘鸿运"
-  ],
-  "city": "深圳",
-  "date": "12.06",
-  "price": "内场1199元",
-  "price_index": 5,
+  "keyword": "世界计划：无法歌唱的初音未来",
+  "users": [],
+  "city": "北京",
+  "date": "10.28",
+  "price": "28.9",
+  "price_index": 2,
   "if_commit_order": true
 }

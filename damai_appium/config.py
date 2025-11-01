@@ -6,6 +6,7 @@ __Description__ = "配置类"
 __Created__ = 2023/10/27 09:54
 """
 import json
+import os
 
 
 class Config:
@@ -21,7 +22,23 @@ class Config:
 
     @staticmethod
     def load_config():
-        with open('config.jsonc', 'r', encoding='utf-8') as config_file:
+        # 尝试多个可能的配置文件路径
+        possible_paths = [
+            'config.jsonc',  # 当前目录
+            'damai_appium/config.jsonc',  # 项目根目录
+            os.path.join(os.path.dirname(__file__), 'config.jsonc'),  # 脚本所在目录
+        ]
+
+        config_path = None
+        for path in possible_paths:
+            if os.path.exists(path):
+                config_path = path
+                break
+
+        if not config_path:
+            raise FileNotFoundError(f"找不到config.jsonc文件，尝试了以下路径: {possible_paths}")
+
+        with open(config_path, 'r', encoding='utf-8') as config_file:
             config = json.load(config_file)
         return Config(config['server_url'],
                       config['keyword'],

@@ -15,7 +15,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
-from config import Config
+try:
+    from .config import Config
+except ImportError:
+    from config import Config
 
 
 class DamaiBot:
@@ -26,25 +29,36 @@ class DamaiBot:
         self._setup_driver()
 
     def _setup_driver(self):
-        """初始化驱动配置"""
+        """初始化驱动配置 - 包含反检测设置"""
         capabilities = {
             "platformName": "Android",  # 操作系统
-            "platformVersion": "16",  # 系统版本
-            "deviceName": "emulator-5554",  # 设备名称
+            # 不指定 platformVersion 和 deviceName，让 Appium 自动检测
             "appPackage": "cn.damai",  # app 包名
             "appActivity": ".launcher.splash.SplashMainActivity",  # app 启动 Activity
-            "unicodeKeyboard": True,  # 支持 Unicode 输入
-            "resetKeyboard": True,  # 隐藏键盘
+            "unicodeKeyboard": False,  # 禁用 Unicode 输入（避免需要 Appium Settings）
+            "resetKeyboard": False,  # 不重置键盘
             "noReset": True,  # 不重置 app
             "newCommandTimeout": 6000,  # 超时时间
             "automationName": "UiAutomator2",  # 使用 uiautomator2
-            "skipServerInstallation": False,  # 跳过服务器安装
+
+            # === 反检测配置 ===
+            "skipServerInstallation": False,  # 需要安装 UiAutomator2 服务器
+            "skipDeviceInitialization": False,  # 需要初始化设备
             "ignoreHiddenApiPolicyError": True,  # 忽略隐藏 API 策略错误
             "disableWindowAnimation": True,  # 禁用窗口动画
-            # 优化性能配置
+
+            # 隐藏自动化特征
+            "skipLogcatCapture": True,  # 不捕获logcat日志
+            "disableSuppressAccessibilityService": True,  # 不禁用辅助功能服务
+
+            # 性能优化配置
             "mjpegServerFramerate": 1,  # 降低截图帧率
             "shouldTerminateApp": False,
-            "adbExecTimeout": 20000,
+            "adbExecTimeout": 60000,  # 增加ADB执行超时到60秒
+            "androidInstallTimeout": 120000,  # 延长安装超时时间到120秒
+
+            # 使用更隐蔽的设置
+            "settings[disableIdLocatorAutocompletion]": True,  # 禁用ID定位器自动完成
         }
 
         device_app_info = AppiumOptions()
@@ -150,29 +164,825 @@ class DamaiBot:
             print("开始抢票流程...")
             start_time = time.time()
 
-            # 1. 城市选择 - 准备多个备选方案
-            print("选择城市...")
-            city_selectors = [
-                (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().text("{self.config.city}")'),
-                (AppiumBy.ANDROID_UIAUTOMATOR, f'new UiSelector().textContains("{self.config.city}")'),
-                (By.XPATH, f'//*[@text="{self.config.city}"]')
-            ]
-            if not self.smart_wait_and_click(*city_selectors[0], city_selectors[1:]):
-                print("城市选择失败")
+            # 0. 等待 APP 完全启动
+            print("等待APP启动...")
+            max_wait_time = 10  # 最多等待10秒
+            for i in range(max_wait_time):
+                time.sleep(1)
+                current_activity = self.driver.current_activity
+                print(f"当前Activity: {current_activity}")
+
+                # 如果已经离开启动页，进入主页
+                if "SplashActivity" not in current_activity and "Splash" not in current_activity:
+                    print(f"APP启动完成，进入{current_activity}")
+                    break
+
+                if i == max_wait_time - 1:
+                    print("APP启动超时")
+                    return False
+
+            # 再等待1秒确保页面完全加载
+            time.sleep(2)
+
+            # 关闭可能出现的广告弹窗
+            print("检查并关闭广告弹窗...")
+            try:
+                # 尝试多种方式关闭广告
+                ad_closed = False
+
+                # 方式1: 查找包含"X"、"关闭"、"跳过"的按钮
+                try:
+                    close_buttons = self.driver.find_elements(
+                        AppiumBy.ANDROID_UIAUTOMATOR,
+                        'new UiSelector().textMatches(".*[Xx×].*|.*关闭.*|.*跳过.*")'
+                    )
+                    if close_buttons:
+                        for btn in close_buttons:
+                            try:
+                                rect = btn.rect
+                                # 右上角的关闭按钮
+                                if rect['x'] > 500 and rect['y'] < 200:
+                                    btn.click()
+                                    ad_closed = True
+                                    print(f"点击了文字关闭按钮")
+                                    break
+                            except:
+                                continue
+                except:
+                    pass
+
+                # 方式2: 查找右上角的小ImageView（X按钮通常是小图标）
+                if not ad_closed:
+                    try:
+                        images = self.driver.find_elements(By.CLASS_NAME, "android.widget.ImageView")
+                        for img in images:
+                            try:
+                                rect = img.rect
+                                # 右上角小图标（X按钮）
+                                if (rect['x'] > 600 and rect['y'] < 150 and
+                                    rect['width'] < 80 and rect['height'] < 80):
+                                    img.click()
+                                    ad_closed = True
+                                    print(f"点击了右上角X按钮 ({rect['x']}, {rect['y']})")
+                                    break
+                            except:
+                                continue
+                    except:
+                        pass
+
+                # 方式3: 直接点击右上角固定位置
+                if not ad_closed:
+                    try:
+                        screen_size = self.driver.get_window_size()
+                        x = screen_size['width'] - 50  # 右上角
+                        y = 50
+                        self.driver.execute_script('mobile: clickGesture', {'x': x, 'y': y})
+                        ad_closed = True
+                        print(f"点击了右上角固定位置 ({x}, {y})")
+                    except:
+                        pass
+
+                if ad_closed:
+                    time.sleep(1)  # 等待广告关闭动画
+                else:
+                    print("未检测到广告，继续...")
+
+            except Exception as e:
+                print(f"关闭广告失败: {e}")
+
+            # 重新获取当前页面
+            current_activity = self.driver.current_activity
+            print(f"当前页面: {current_activity}")
+
+            # 判断是否需要搜索
+            need_search = False
+            need_click_result = False
+            need_select_city = False
+
+            # 检查是否在影城选择页面
+            if "Cinema" in current_activity:
+                print("在影城选择页面，跳过搜索流程")
+                # 不需要搜索，直接到影城选择环节
+            elif ".homepage.MainActivity" in current_activity or "HomePageActivity" in current_activity:
+                need_select_city = True  # 在首页需要选择城市
+                need_search = True
+                need_click_result = True
+                print("在首页，需要完整搜索流程")
+            elif "SearchActivity" in current_activity:
+                # 在搜索页面，检查是否有搜索结果
+                try:
+                    results = self.driver.find_elements(
+                        AppiumBy.ANDROID_UIAUTOMATOR,
+                        f'new UiSelector().textContains("{self.config.keyword[:10]}")'
+                    )
+                    if results:
+                        need_click_result = True
+                        print("在搜索页面，发现搜索结果，需要点击")
+                    else:
+                        need_search = True
+                        need_click_result = True
+                        print("在搜索页面，但无结果，需要重新搜索")
+                except:
+                    need_click_result = True
+                    print("在搜索页面，尝试点击结果")
+
+            # 执行搜索流程
+            if need_search:
+                print(f"在首页，开始搜索关键词: {self.config.keyword}")
+
+                # 0.1 尝试多种方式找到并点击搜索框
+                print("查找搜索框...")
+                search_clicked = False
+
+                # 方式1: 通过ID查找
+                try:
+                    search_box = self.driver.find_element(By.ID, "cn.damai:id/search_edit_view")
+                    search_box.click()
+                    search_clicked = True
+                    print("通过ID找到搜索框")
+                except:
+                    pass
+
+                # 方式2: 通过 UIAutomator 查找包含"搜索"的元素
+                if not search_clicked:
+                    try:
+                        search_elements = self.driver.find_elements(
+                            AppiumBy.ANDROID_UIAUTOMATOR,
+                            'new UiSelector().textContains("搜索").clickable(true)'
+                        )
+                        if search_elements:
+                            search_elements[0].click()
+                            search_clicked = True
+                            print("通过文本找到搜索框")
+                    except Exception as e:
+                        print(f"方式2失败: {e}")
+
+                # 方式3: 查找 EditText
+                if not search_clicked:
+                    try:
+                        edit_texts = self.driver.find_elements(By.CLASS_NAME, "android.widget.EditText")
+                        if edit_texts:
+                            edit_texts[0].click()
+                            search_clicked = True
+                            print("通过EditText找到搜索框")
+                    except Exception as e:
+                        print(f"方式3失败: {e}")
+
+                if not search_clicked:
+                    print("搜索框点击失败")
+                    return False
+
+                time.sleep(1)  # 等待搜索框打开
+
+                # 0.1.5 处理位置权限弹窗（关键步骤！）
+                print("检查位置权限弹窗...")
+                time.sleep(1.5)  # 等待弹窗显示
+
+                try:
+                    permission_handled = False
+
+                    # 方式1: 查找"立即开启"按钮（优先点击这个）
+                    try:
+                        print("  查找'立即开启'按钮...")
+                        buttons = self.driver.find_elements(
+                            AppiumBy.ANDROID_UIAUTOMATOR,
+                            'new UiSelector().text("立即开启")'
+                        )
+                        if buttons:
+                            buttons[0].click()
+                            permission_handled = True
+                            print("  ✅ 点击了'立即开启'按钮")
+                            time.sleep(1)
+                    except Exception as e:
+                        print(f"  方式1失败: {e}")
+
+                    # 方式2: 查找"下次再说"按钮
+                    if not permission_handled:
+                        try:
+                            print("  查找'下次再说'按钮...")
+                            buttons = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                'new UiSelector().text("下次再说")'
+                            )
+                            if buttons:
+                                buttons[0].click()
+                                permission_handled = True
+                                print("  ✅ 点击了'下次再说'按钮")
+                                time.sleep(1)
+                        except Exception as e:
+                            print(f"  方式2失败: {e}")
+
+                    # 方式3: 通用匹配 - 查找包含"开启"、"允许"等文本的按钮
+                    if not permission_handled:
+                        try:
+                            print("  尝试通用权限按钮匹配...")
+                            buttons = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                'new UiSelector().textMatches(".*开启.*|.*允许.*|.*同意.*").clickable(true)'
+                            )
+                            if buttons:
+                                for btn in buttons:
+                                    try:
+                                        text = btn.text if hasattr(btn, 'text') else ''
+                                        print(f"  找到按钮: {text}")
+                                        btn.click()
+                                        permission_handled = True
+                                        print(f"  ✅ 点击了: {text}")
+                                        time.sleep(1)
+                                        break
+                                    except:
+                                        continue
+                        except Exception as e:
+                            print(f"  方式3失败: {e}")
+
+                    # 方式4: 如果都没找到，尝试"下次"、"取消"、"暂不"等
+                    if not permission_handled:
+                        try:
+                            print("  查找拒绝按钮...")
+                            buttons = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                'new UiSelector().textMatches(".*下次.*|.*取消.*|.*暂不.*").clickable(true)'
+                            )
+                            if buttons:
+                                buttons[0].click()
+                                permission_handled = True
+                                print(f"  ✅ 点击了拒绝按钮")
+                                time.sleep(1)
+                        except:
+                            pass
+
+                    if permission_handled:
+                        print("  权限弹窗已处理")
+                    else:
+                        print("  未发现权限弹窗，继续...")
+
+                except Exception as e:
+                    print(f"  权限弹窗处理异常: {e}")
+
+                time.sleep(1)  # 确保弹窗完全关闭
+
+                # 0.2 输入搜索关键词 - 重新查找输入框
+                print(f"输入关键词: {self.config.keyword}")
+                try:
+                    # 重新查找当前聚焦的输入框
+                    for _ in range(3):  # 尝试3次
+                        try:
+                            # 先清空
+                            self.driver.press_keycode(123)  # KEYCODE_DEL
+                            time.sleep(0.2)
+
+                            # 输入关键词
+                            search_inputs = self.driver.find_elements(By.CLASS_NAME, "android.widget.EditText")
+                            if search_inputs:
+                                search_inputs[0].send_keys(self.config.keyword)
+                                print("输入成功")
+                                break
+                            time.sleep(0.5)
+                        except Exception as e:
+                            print(f"输入尝试失败: {e}")
+                            if _ == 2:  # 最后一次尝试
+                                raise
+
+                    time.sleep(1)
+                except Exception as e:
+                    print(f"输入关键词失败: {e}")
+                    # 尝试备用方案：使用 ADB 输入
+                    try:
+                        print("尝试使用ADB输入...")
+                        self.driver.execute_script('mobile: shell', {
+                            'command': 'input',
+                            'args': ['text', self.config.keyword]
+                        })
+                        time.sleep(0.5)
+                    except Exception as e2:
+                        print(f"ADB输入也失败: {e2}")
+                        return False
+
+                # 0.3 执行搜索
+                print("执行搜索...")
+                self.driver.press_keycode(66)  # KEYCODE_ENTER
+                time.sleep(3)  # 等待搜索结果加载
+
+            # 0.4 点击第一个搜索结果（如果需要）
+            if need_click_result:
+                print("选择搜索结果...")
+                print(f"搜索关键词: {self.config.keyword}")
+                time.sleep(2)  # 等待搜索结果完全加载
+                try:
+                    # 尝试多种方式找到搜索结果
+                    result_clicked = False
+
+                    # 方式1: 查找包含关键词前几个字的TextView
+                    try:
+                        # 使用关键词的前5个字进行搜索
+                        search_text = self.config.keyword[:5] if len(self.config.keyword) > 5 else self.config.keyword
+                        print(f"方式1: 查找包含'{search_text}'的TextView...")
+                        results = self.driver.find_elements(
+                            AppiumBy.ANDROID_UIAUTOMATOR,
+                            f'new UiSelector().className("android.widget.TextView").textContains("{search_text}")'
+                        )
+                        print(f"找到{len(results)}个TextView结果")
+                        if results:
+                            # 找到在屏幕中上部分的结果
+                            for i, result in enumerate(results[:10]):
+                                try:
+                                    rect = result.rect
+                                    text = result.text if hasattr(result, 'text') else ''
+                                    print(f"  结果{i}: y={rect['y']}, text='{text[:20]}...'")
+                                    if 50 < rect['y'] < 1000:  # 扩大范围
+                                        result.click()
+                                        result_clicked = True
+                                        print(f"[成功] 点击了TextView搜索结果，y={rect['y']}")
+                                        break
+                                except Exception as e:
+                                    print(f"  结果{i}点击失败: {e}")
+                                    continue
+                    except Exception as e:
+                        print(f"方式1失败: {e}")
+
+                    # 方式2: 如果TextView不可点击，尝试点击其父容器
+                    if not result_clicked:
+                        try:
+                            # 找到包含关键词的任何元素
+                            results = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                f'new UiSelector().textContains("{self.config.keyword[:10]}")'
+                            )
+                            if results:
+                                # 尝试点击元素所在的位置
+                                rect = results[0].rect
+                                x = rect['x'] + rect['width'] // 2
+                                y = rect['y'] + rect['height'] // 2
+                                self.driver.execute_script('mobile: clickGesture', {
+                                    'x': x,
+                                    'y': y
+                                })
+                                result_clicked = True
+                                print(f"点击了搜索结果位置 ({x}, {y})")
+                        except Exception as e:
+                            print(f"方式2失败: {e}")
+
+                    # 方式3: 查找可点击的列表项
+                    if not result_clicked:
+                        try:
+                            clickables = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                'new UiSelector().clickable(true)'
+                            )
+                            # 找到y坐标在屏幕上部的元素
+                            for el in clickables[:15]:
+                                try:
+                                    rect = el.rect
+                                    if 150 < rect['y'] < 600:  # 搜索结果通常在上部
+                                        el.click()
+                                        result_clicked = True
+                                        print(f"点击了可点击元素，y={rect['y']}")
+                                        break
+                                except:
+                                    continue
+                        except Exception as e:
+                            print(f"方式3失败: {e}")
+
+                    if not result_clicked:
+                        print("搜索结果点击失败")
+                        return False
+
+                    time.sleep(3)  # 等待进入详情页
+                except Exception as e:
+                    print(f"点击搜索结果失败: {e}")
+                    return False
+
+            # 2. 点击购票按钮 - 多种可能的按钮文本
+            print("点击购票按钮...")
+            book_clicked = False
+
+            # 方式1: 优先查找明确的购票相关按钮（不包含距离、场馆等干扰词）
+            print("  尝试方式1：查找购票按钮...")
+            try:
+                buttons = self.driver.find_elements(
+                    AppiumBy.ANDROID_UIAUTOMATOR,
+                    'new UiSelector().textMatches(".*购票.*|.*特惠.*|.*预约.*|.*购买.*|.*立即.*")'
+                )
+                print(f"  找到{len(buttons)}个匹配按钮")
+                if buttons:
+                    # 过滤掉包含干扰词的按钮
+                    valid_buttons = []
+                    for btn in buttons:
+                        try:
+                            text = btn.text if btn.text else ""
+                            # 排除包含km、场馆、距离的按钮
+                            if not any(word in text for word in ["km", "场馆", "距离", "公里"]):
+                                valid_buttons.append(btn)
+                        except:
+                            continue
+
+                    print(f"  过滤后剩余{len(valid_buttons)}个有效按钮")
+
+                    # 优先点击底部的按钮
+                    for i, btn in enumerate(reversed(valid_buttons)):
+                        try:
+                            rect = btn.rect
+                            text = btn.text if btn.text else "[无文本]"
+                            print(f"    按钮[{i}]: '{text}', y={rect['y']}")
+                            if rect['y'] > 800:  # 底部区域
+                                btn.click()
+                                book_clicked = True
+                                print(f"  [OK] 点击了底部购票按钮: {text}, y={rect['y']}")
+                                break
+                        except Exception as e:
+                            print(f"    按钮[{i}]点击失败")
+                            continue
+
+                    # 如果没有底部按钮，点击第一个有效按钮
+                    if not book_clicked and valid_buttons:
+                        valid_buttons[0].click()
+                        book_clicked = True
+                        print(f"  [OK] 点击了购票按钮: {valid_buttons[0].text}")
+                else:
+                    print("  未找到匹配按钮")
+            except Exception as e:
+                print(f"  方式1失败: {e}")
+
+            # 方式2: 通过ID查找
+            if not book_clicked:
+                try:
+                    btn = self.driver.find_element(By.ID, "cn.damai:id/trade_project_detail_purchase_status_bar_container_fl")
+                    btn.click()
+                    book_clicked = True
+                    print("通过ID点击了购票按钮")
+                except Exception as e:
+                    print(f"方式2失败: {e}")
+
+            # 方式3: 点击屏幕底部中央
+            if not book_clicked:
+                try:
+                    screen_size = self.driver.get_window_size()
+                    x = screen_size['width'] // 2
+                    y = screen_size['height'] - 100  # 底部往上100像素
+                    self.driver.execute_script('mobile: clickGesture', {'x': x, 'y': y})
+                    book_clicked = True
+                    print(f"点击了底部中央位置 ({x}, {y})")
+                except Exception as e:
+                    print(f"方式3失败: {e}")
+
+            if not book_clicked:
+                print("购票按钮点击失败")
                 return False
 
-            # 2. 点击预约按钮 - 多种可能的按钮文本
-            print("点击预约按钮...")
-            book_selectors = [
-                (By.ID, "cn.damai:id/trade_project_detail_purchase_status_bar_container_fl"),
-                (AppiumBy.ANDROID_UIAUTOMATOR, 'new UiSelector().textMatches(".*预约.*|.*购买.*|.*立即.*")'),
-                (By.XPATH, '//*[contains(@text,"预约") or contains(@text,"购买")]')
-            ]
-            if not self.smart_wait_and_click(*book_selectors[0], book_selectors[1:]):
-                print("预约按钮点击失败")
-                return False
+            time.sleep(2)  # 等待进入选票页面
 
-            # 3. 票价选择 - 优化查找逻辑
+            # 3. 选择影城门店（如果是电影票）
+            print("检查是否需要选择影城...")
+            try:
+                # 检查当前是否在影城选择页面
+                current_activity = self.driver.current_activity
+                if "Cinema" in current_activity or "影城" in current_activity:
+                    print("进入影城选择页面，选择门店...")
+                    # 查找包含"中影大成国家影城"的元素
+                    cinema_name = "中影大成国家影城"
+                    cinema_found = False
+
+                    try:
+                        cinemas = self.driver.find_elements(
+                            AppiumBy.ANDROID_UIAUTOMATOR,
+                            f'new UiSelector().textContains("{cinema_name}")'
+                        )
+                        if cinemas:
+                            cinemas[0].click()
+                            cinema_found = True
+                            print(f"选择了影城: {cinema_name}")
+                        else:
+                            # 如果找不到完整名称，尝试搜索关键词
+                            print(f"未找到{cinema_name}，尝试搜索...")
+                            search_elements = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                'new UiSelector().textContains("搜索").clickable(true)'
+                            )
+                            if search_elements:
+                                search_elements[0].click()
+                                time.sleep(1)
+                                # 输入影城名称
+                                edit_texts = self.driver.find_elements(By.CLASS_NAME, "android.widget.EditText")
+                                if edit_texts:
+                                    edit_texts[0].send_keys(cinema_name)
+                                    time.sleep(1)
+                                    # 点击搜索结果
+                                    results = self.driver.find_elements(
+                                        AppiumBy.ANDROID_UIAUTOMATOR,
+                                        f'new UiSelector().textContains("{cinema_name}")'
+                                    )
+                                    if results:
+                                        results[0].click()
+                                        cinema_found = True
+                                        print(f"搜索并选择了影城: {cinema_name}")
+                    except Exception as e:
+                        print(f"影城选择出错: {e}")
+
+                    if cinema_found:
+                        time.sleep(2)  # 等待进入场次选择
+                    else:
+                        print("未找到指定影城，继续...")
+                else:
+                    print("不在影城选择页面，跳过")
+            except Exception as e:
+                print(f"影城选择失败: {e}")
+
+            # 3.5. 选座（如果是电影票）- V3 增强版
+            print("检查是否需要选座...")
+            try:
+                # 更智能的选座页面检测：检查是否有"请先选座"按钮
+                need_select_seat = False
+                try:
+                    seat_buttons = self.driver.find_elements(
+                        AppiumBy.ANDROID_UIAUTOMATOR,
+                        'new UiSelector().textContains("选座")'
+                    )
+                    if seat_buttons:
+                        need_select_seat = True
+                        print("检测到选座按钮，进入选座流程...")
+                except:
+                    pass
+
+                if need_select_seat:
+                    print("=== 开始选座 ===")
+                    screen_size = self.driver.get_window_size()
+                    center_x = screen_size['width'] // 2
+
+                    # 座位图通常在屏幕上半部分（从截图看大约在200-500的y坐标范围）
+                    seat_area_top = 200
+                    seat_area_bottom = 500
+                    seat_area_center_y = (seat_area_top + seat_area_bottom) // 2
+
+                    # 步骤1：尝试缩小视图以看到更多座位
+                    print("步骤1: 调整视图...")
+                    try:
+                        self.driver.execute_script('mobile: pinchCloseGesture', {
+                            'left': center_x - 150,
+                            'top': seat_area_center_y - 150,
+                            'width': 300,
+                            'height': 300,
+                            'percent': 0.6,
+                            'speed': 800
+                        })
+                        time.sleep(1)
+                    except Exception as e:
+                        print(f"  缩放失败(可忽略): {e}")
+
+                    # 步骤2：在座位区域多点尝试选座
+                    print("步骤2: 智能选座...")
+                    seat_selected = False
+
+                    # 在座位图区域尝试多个位置
+                    try_positions = [
+                        (center_x, seat_area_center_y),  # 中心
+                        (center_x - 60, seat_area_center_y),  # 中心偏左
+                        (center_x + 60, seat_area_center_y),  # 中心偏右
+                        (center_x, seat_area_center_y - 50),  # 中心偏上
+                        (center_x, seat_area_center_y + 50),  # 中心偏下
+                        (center_x - 40, seat_area_center_y - 40),  # 左上
+                        (center_x + 40, seat_area_center_y - 40),  # 右上
+                    ]
+
+                    for i, (x, y) in enumerate(try_positions):
+                        if seat_selected:
+                            break
+
+                        print(f"  尝试位置{i+1}: ({x}, {y})")
+                        try:
+                            # 点击座位
+                            self.driver.execute_script('mobile: clickGesture', {
+                                'x': x,
+                                'y': y,
+                                'duration': 80
+                            })
+                            time.sleep(0.8)
+
+                            # 检查底部按钮文本是否变化
+                            buttons = self.driver.find_elements(
+                                AppiumBy.ANDROID_UIAUTOMATOR,
+                                'new UiSelector().className("android.widget.Button")'
+                            )
+
+                            for btn in reversed(buttons):  # 从底部开始
+                                try:
+                                    rect = btn.rect
+                                    if rect['y'] > screen_size['height'] - 300:  # 底部区域
+                                        btn_text = btn.text if hasattr(btn, 'text') else ''
+                                        print(f"    底部按钮文本: '{btn_text}'")
+                                        # 如果按钮文本不再是"请先选座"，说明选座成功
+                                        if btn_text and "请先选座" not in btn_text:
+                                            seat_selected = True
+                                            print(f"  ✅ 选座成功！位置({x},{y})")
+                                            break
+                                except:
+                                    continue
+                        except Exception as e:
+                            print(f"    位置{i+1}失败: {e}")
+                            continue
+
+                    if not seat_selected:
+                        print("  ⚠️ 未能自动选座，尝试备用方案...")
+                        # 备用方案：直接点击座位图中心偏上的位置
+                        try:
+                            self.driver.execute_script('mobile: clickGesture', {
+                                'x': center_x,
+                                'y': 300,  # 固定在300的y坐标
+                                'duration': 100
+                            })
+                            time.sleep(1)
+                            print("  执行了备用点击")
+                        except:
+                            pass
+
+                    # 步骤3：点击底部确认按钮（不管是否成功选座都尝试）
+                    print("步骤3: 点击确认按钮...")
+                    time.sleep(1)
+                    try:
+                        buttons = self.driver.find_elements(
+                            AppiumBy.ANDROID_UIAUTOMATOR,
+                            'new UiSelector().className("android.widget.Button")'
+                        )
+                        clicked = False
+                        for btn in reversed(buttons):
+                            try:
+                                rect = btn.rect
+                                if rect['y'] > screen_size['height'] - 300:
+                                    btn_text = btn.text if hasattr(btn, 'text') else ''
+                                    print(f"  找到底部按钮: '{btn_text}'")
+                                    btn.click()
+                                    clicked = True
+                                    print(f"  ✅ 点击了按钮: {btn_text}")
+                                    break
+                            except:
+                                continue
+
+                        if not clicked:
+                            # 如果没找到按钮，直接点击底部中央
+                            print("  使用坐标点击底部...")
+                            self.driver.execute_script('mobile: clickGesture', {
+                                'x': center_x,
+                                'y': screen_size['height'] - 100
+                            })
+                    except Exception as e:
+                        print(f"  点击确认按钮失败: {e}")
+
+                    time.sleep(2)
+                    print("=== 选座流程完成 ===")
+                else:
+                    print("未检测到选座页面，跳过")
+            except Exception as e:
+                print(f"选座处理失败: {e}")
+
+            # 4. 检查是否是电影票（电影票跳过票价选择）
+            current_activity = self.driver.current_activity
+            is_movie_ticket = "movie" in current_activity.lower() or "cinema" in current_activity.lower() or "seat" in current_activity.lower()
+
+            if is_movie_ticket:
+                print("检测到电影票流程，跳过票价选择...")
+
+                # 先勾选协议（在弹窗中）
+                print("勾选用户协议...")
+                time.sleep(1)  # 等待弹窗完全显示
+                try:
+                    agreement_checked = False
+
+                    # 方式1: 查找包含"我已阅读并同意"的文本，点击其左边的复选框
+                    try:
+                        agreements = self.driver.find_elements(
+                            AppiumBy.ANDROID_UIAUTOMATOR,
+                            'new UiSelector().textContains("我已阅读并同意")'
+                        )
+                        if agreements:
+                            for agreement in agreements:
+                                try:
+                                    rect = agreement.rect
+                                    # 点击文本左边60px的位置（复选框圆圈）
+                                    x = rect['x'] - 60
+                                    y = rect['y'] + rect['height'] // 2
+                                    if x > 20:  # 确保坐标在屏幕内
+                                        self.driver.execute_script('mobile: clickGesture', {'x': x, 'y': y})
+                                        agreement_checked = True
+                                        print(f"点击了协议文本左边的复选框 ({x}, {y})")
+                                        break
+                                except Exception as e:
+                                    print(f"单个协议元素处理失败: {e}")
+                                    continue
+                    except Exception as e:
+                        print(f"方式1失败: {e}")
+
+                    # 方式2: 通过坐标点击弹窗中的复选框（弹窗居中，复选框在左侧）
+                    if not agreement_checked:
+                        try:
+                            screen_size = self.driver.get_window_size()
+                            # 弹窗通常在屏幕中央，复选框在弹窗中"我已阅读"文字左边
+                            # 估算位置：屏幕中央偏左
+                            x = screen_size['width'] // 2 - 80
+                            y = screen_size['height'] // 2 + 100  # 弹窗中下部
+                            self.driver.execute_script('mobile: clickGesture', {'x': x, 'y': y})
+                            agreement_checked = True
+                            print(f"点击了弹窗协议复选框位置 ({x}, {y})")
+                        except Exception as e:
+                            print(f"方式2失败: {e}")
+
+                    # 方式3: 查找RadioButton或ImageView（未选中的圆圈）
+                    if not agreement_checked:
+                        try:
+                            # 查找屏幕中央区域的小图标
+                            images = self.driver.find_elements(By.CLASS_NAME, "android.widget.ImageView")
+                            for img in images:
+                                try:
+                                    rect = img.rect
+                                    screen_size = self.driver.get_window_size()
+                                    # 弹窗中央区域的小图标
+                                    if (400 < rect['y'] < 700 and
+                                        rect['width'] < 60 and rect['height'] < 60 and
+                                        rect['x'] < screen_size['width'] // 2):
+                                        img.click()
+                                        agreement_checked = True
+                                        print(f"点击了弹窗中的ImageView复选框")
+                                        break
+                                except:
+                                    continue
+                        except Exception as e:
+                            print(f"方式3失败: {e}")
+
+                    if agreement_checked:
+                        time.sleep(0.5)  # 等待复选框状态更新
+                    else:
+                        print("未找到协议复选框，尝试继续...")
+
+                except Exception as e:
+                    print(f"勾选协议失败: {e}")
+
+                # 第二步：点击"继续购票"
+                print("点击继续购票...")
+                try:
+                    continue_clicked = False
+
+                    # 查找"继续购票"按钮
+                    continue_buttons = self.driver.find_elements(
+                        AppiumBy.ANDROID_UIAUTOMATOR,
+                        'new UiSelector().textMatches(".*继续购票.*|.*继续.*|.*下一步.*")'
+                    )
+                    if continue_buttons:
+                        for btn in continue_buttons:
+                            try:
+                                btn.click()
+                                continue_clicked = True
+                                print(f"点击了继续购票按钮: {btn.text}")
+                                break
+                            except:
+                                continue
+
+                    if not continue_clicked:
+                        print("未找到继续购票按钮，尝试继续...")
+
+                    time.sleep(2)  # 等待进入支付页面
+                except Exception as e:
+                    print(f"点击继续购票失败: {e}")
+
+                # 第三步：点击"立即付款"
+                print("点击立即付款...")
+                try:
+                    payment_clicked = False
+
+                    # 查找"立即付款"按钮（通常在右下角）
+                    payment_buttons = self.driver.find_elements(
+                        AppiumBy.ANDROID_UIAUTOMATOR,
+                        'new UiSelector().textMatches(".*立即付款.*|.*去支付.*|.*确认支付.*|.*付款.*")'
+                    )
+                    if payment_buttons:
+                        for btn in reversed(payment_buttons):
+                            try:
+                                rect = btn.rect
+                                # 右下角按钮
+                                if rect['y'] > 900 and rect['x'] > 300:
+                                    btn.click()
+                                    payment_clicked = True
+                                    print(f"点击了立即付款按钮: {btn.text}, 位置({rect['x']}, {rect['y']})")
+                                    break
+                            except:
+                                continue
+
+                    # 备用方案：点击右下角
+                    if not payment_clicked:
+                        screen_size = self.driver.get_window_size()
+                        x = screen_size['width'] - 100  # 右下角
+                        y = screen_size['height'] - 80
+                        self.driver.execute_script('mobile: clickGesture', {'x': x, 'y': y})
+                        payment_clicked = True
+                        print(f"点击了右下角位置 ({x}, {y})")
+
+                    time.sleep(1)
+                except Exception as e:
+                    print(f"点击立即付款失败: {e}")
+
+                end_time = time.time()
+                print(f"抢票流程完成，耗时: {end_time - start_time:.2f}秒")
+                return True
+
+            # 以下是演唱会票流程
+            # 4. 票价选择 - 优化查找逻辑
             print("选择票价...")
             try:
                 # 直接尝试点击，不等待容器，实际每次都失败，只能等待

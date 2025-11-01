@@ -56,17 +56,18 @@ def mock_appium_driver():
     """Mock Appium driver for mobile tests."""
     # Create a mock driver without importing appium
     mock_driver = Mock()
-    
+
     # Common Appium methods
     mock_driver.find_element = Mock()
     mock_driver.find_elements = Mock()
     mock_driver.tap = Mock()
     mock_driver.swipe = Mock()
     mock_driver.quit = Mock()
-    
-    # Mock the Remote class
-    with patch.object(mock_driver, "__class__.__name__", "Remote"):
-        yield mock_driver
+
+    # Set the class name properly using spec
+    type(mock_driver).__name__ = "Remote"
+
+    yield mock_driver
 
 
 @pytest.fixture
