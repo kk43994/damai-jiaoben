@@ -824,43 +824,49 @@ class SmartAIGUI:
 
                 # 状态映射
                 status_symbols = {
-                    'ok': '✅',
-                    'warning': '⚠️',
-                    'error': '❌'
+                    'ok': '[OK]',
+                    'warning': '[WARN]',
+                    'error': '[ERROR]'
                 }
 
-                for name, result in results.items():
-                    symbol = status_symbols.get(result.status, '❓')
-                    result_text.insert(tk.END, f"\n{symbol} [{name.upper()}]\n")
-                    result_text.insert(tk.END, f"  状态: {result.status.upper()}\n")
-                    result_text.insert(tk.END, f"  信息: {result.message}\n")
+                def update_ui():
+                    for name, result in results.items():
+                        symbol = status_symbols.get(result.status, '[?]')
+                        result_text.insert(tk.END, f"\n{symbol} [{name.upper()}]\n")
+                        result_text.insert(tk.END, f"  状态: {result.status.upper()}\n")
+                        result_text.insert(tk.END, f"  信息: {result.message}\n")
 
-                    if result.details:
-                        result_text.insert(tk.END, f"  详情:\n")
-                        for line in result.details.split('\n'):
-                            result_text.insert(tk.END, f"    {line}\n")
+                        if result.details:
+                            result_text.insert(tk.END, f"  详情:\n")
+                            for line in result.details.split('\n'):
+                                result_text.insert(tk.END, f"    {line}\n")
 
-                    if result.fix_available:
-                        result_text.insert(tk.END, f"  💡 修复建议: {result.fix_action}\n")
+                        if result.fix_available:
+                            result_text.insert(tk.END, f"  修复建议: {result.fix_action}\n")
 
-                    result_text.insert(tk.END, "\n")
+                        result_text.insert(tk.END, "\n")
 
-                # 总结
-                result_text.insert(tk.END, "=" * 70 + "\n")
-                result_text.insert(tk.END, "检测完成！\n")
+                    # 总结
+                    result_text.insert(tk.END, "=" * 70 + "\n")
+                    result_text.insert(tk.END, "检测完成！\n")
 
-                error_count = sum(1 for r in results.values() if r.status == 'error')
-                warning_count = sum(1 for r in results.values() if r.status == 'warning')
-                ok_count = sum(1 for r in results.values() if r.status == 'ok')
+                    error_count = sum(1 for r in results.values() if r.status == 'error')
+                    warning_count = sum(1 for r in results.values() if r.status == 'warning')
+                    ok_count = sum(1 for r in results.values() if r.status == 'ok')
 
-                result_text.insert(tk.END, f"✅ 正常: {ok_count}  ⚠️ 警告: {warning_count}  ❌ 错误: {error_count}\n")
-                result_text.insert(tk.END, "=" * 70 + "\n")
+                    result_text.insert(tk.END, f"正常: {ok_count}  警告: {warning_count}  错误: {error_count}\n")
+                    result_text.insert(tk.END, "=" * 70 + "\n")
 
-                # 滚动到顶部
-                result_text.see(1.0)
+                    # 滚动到顶部
+                    result_text.see(1.0)
+
+                # 使用after在主线程中更新UI
+                self.root.after(0, update_ui)
 
             except Exception as e:
-                result_text.insert(tk.END, f"\n❌ 检测过程出错: {str(e)}\n")
+                def show_error():
+                    result_text.insert(tk.END, f"\n[ERROR] 检测过程出错: {str(e)}\n")
+                self.root.after(0, show_error)
 
         threading.Thread(target=do_check, daemon=True).start()
 
