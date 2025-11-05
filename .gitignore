@@ -163,6 +163,17 @@ config.json
 credentials.json
 *.cookie
 *.session
+last_config.json
+
+# Screenshots and images
+screenshots/
+*.png
+*.jpg
+*.jpeg
+
+# Appium and automation logs
+appium.log
+appium_*.log
 
 # Temporary files
 *.tmp
@@ -178,3 +189,7 @@ credentials.json
 # Lock files (except poetry.lock)
 *.lock
 !poetry.lock
+
+# Example scripts output (optional - uncomment if needed)
+# examples/*.json
+# examples/*.log

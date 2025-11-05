@@ -1,17 +1,27 @@
 [tool.poetry]
 name = "damai-ticket-automation"
-version = "0.1.0"
+version = "0.2.0"
 description = "Automated ticket purchasing system for Damai.com"
 authors = ["Your Name <your.email@example.com>"]
 readme = "README.md"
 packages = [
-    { include = "damai" },
     { include = "damai_appium" }
 ]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-selenium = "4.18.1"
+# Core automation
+Appium-Python-Client = "^3.1.0"
+selenium = "^4.18.0"
+# OCR and image processing
+paddleocr = "^2.7.0"
+paddlepaddle = "^2.6.0"
+opencv-python = "^4.9.0"
+Pillow = "^10.2.0"
+numpy = "^1.24.0"
+# Utilities
+pyperclip = "^1.8.2"
+requests = "^2.31.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.0.0"
