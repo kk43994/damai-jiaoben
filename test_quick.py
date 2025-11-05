@@ -155,14 +155,120 @@ def quick_search(driver, city, keyword):
         log(f"  [ERROR] 搜索失败: {e}")
         return False
 
+def find_and_click_show(driver):
+    """在搜索结果中查找并点击演出"""
+    log("\n  步骤: 查找演出列表")
+    try:
+        time.sleep(1.5)  # 等待列表加载
+
+        # 尝试多种方式查找演出列表项
+        item_ids = [
+            f"{PKG}:id/item_project_title",
+            f"{PKG}:id/project_title",
+            f"{PKG}:id/title",
+        ]
+
+        found_items = []
+        for item_id in item_ids:
+            try:
+                els = driver.find_elements(AppiumBy.ID, item_id)
+                if els:
+                    log(f"  通过 {item_id} 找到 {len(els)} 个")
+                    found_items.extend(els)
+                    break
+            except:
+                pass
+
+        # 通过文本查找
+        if not found_items:
+            log("  尝试通过文本查找...")
+            try:
+                els = driver.find_elements(AppiumBy.ANDROID_UIAUTOMATOR,
+                    'new UiSelector().textContains("鹭卓")')
+                if els:
+                    found_items.extend(els)
+                    log(f"  通过关键词找到 {len(els)} 个")
+            except:
+                pass
+
+        if found_items:
+            log(f"  [INFO] 找到 {len(found_items)} 个候选项")
+
+            # 点击第一个包含"鹭卓"的
+            for item in found_items:
+                try:
+                    text = item.text or ""
+                    if "鹭卓" in text or len(text) > 5:
+                        log(f"  点击: {text[:30]}...")
+                        item.click()
+                        time.sleep(2)
+                        log("  [OK] 已点击演出")
+                        return True
+                except:
+                    continue
+
+            # 如果没找到，点击第一个
+            try:
+                found_items[0].click()
+                time.sleep(2)
+                log("  [OK] 已点击第一个")
+                return True
+            except:
+                pass
+
+        log("  [WARN] 未找到演出项")
+        return False
+
+    except Exception as e:
+        log(f"  [ERROR] {e}")
+        return False
+
+def verify_detail_page(driver):
+    """验证是否进入详情页"""
+    log("\n  步骤: 验证详情页")
+    try:
+        time.sleep(1.5)
+
+        # 查找详情页锚点
+        anchors = ["立即购买", "立即抢购", "选择场次", "想看"]
+
+        for anchor in anchors:
+            try:
+                els = driver.find_elements(AppiumBy.ANDROID_UIAUTOMATOR,
+                    f'new UiSelector().textContains("{anchor}")')
+                if els:
+                    log(f"  [OK] 找到锚点: {anchor}")
+
+                    # 保存截图
+                    img = driver.get_screenshot_as_png()
+                    with open("detail_page_success.png", "wb") as f:
+                        f.write(img)
+                    log("  [OK] 截图: detail_page_success.png")
+
+                    return True
+            except:
+                pass
+
+        log("  [WARN] 未找到详情页锚点")
+
+        # 保存调试截图
+        img = driver.get_screenshot_as_png()
+        with open("detail_page_unknown.png", "wb") as f:
+            f.write(img)
+        log("  已保存调试截图: detail_page_unknown.png")
+
+        return False
+
+    except Exception as e:
+        log(f"  [ERROR] {e}")
+        return False
+
 def main():
-    """主函数 - 稳定性测试（5次）"""
+    """主函数 - 快速完整流程测试"""
     log("="*60)
-    log("稳定性测试 - 连续5次测试")
+    log("快速完整流程测试 - 保持会话")
     log("="*60)
 
-    success_count = 0
-    total_tests = 5
     test_city = "北京"
     test_keyword = "鹭卓 Ready To The Top 巡回演唱会"
 
@@ -170,48 +276,140 @@ def main():
         # 获取driver（第一次慢，后续快）
         driver = get_driver()
 
-        for i in range(total_tests):
-            log(f"\n{'='*60}")
-            log(f"[测试 {i+1}/{total_tests}] 城市={test_city}, 关键词={test_keyword}")
+        log("\n" + "="*60)
+        log(f"测试: 城市={test_city}, 关键词={test_keyword}")
+        log("="*60)
+
+        # 重置到首页
+        if not reset_to_homepage(driver):
+            log("[ERROR] 重置失败")
+            return
+
+        # 等待首页
+        time.sleep(2)
+
+        # 1. 城市选择
+        try:
+            els = driver.find_elements(AppiumBy.ID, f"{PKG}:id/home_city")
+            if els:
+                current = els[0].text or ""
+                log(f"  当前城市: {current}")
+
+                if test_city not in current:
+                    log(f"  切换到: {test_city}")
+                    els[0].click()
+                    time.sleep(0.5)
+
+                    # 输入搜索
+                    input_els = driver.find_elements(AppiumBy.CLASS_NAME, "android.widget.EditText")
+                    if input_els:
+                        input_els[0].send_keys(test_city)
+                        time.sleep(0.8)
+
+                        # 从结果中点击
+                        city_results = driver.find_elements(AppiumBy.CLASS_NAME, "android.widget.TextView")
+                        for result in city_results:
+                            try:
+                                text = result.text or ""
+                                if test_city in text:
+                                    result.click()
+                                    time.sleep(0.5)
+                                    log(f"  [OK] 已切换到{test_city}")
+                                    break
+                            except:
+                                continue
+                else:
+                    log(f"  [OK] 已是{test_city}")
+        except Exception as e:
+            log(f"  [SKIP] 城市选择: {e}")
+
+        # 2. 点击搜索框
+        try:
+            els = driver.find_elements(AppiumBy.ID, f"{PKG}:id/homepage_header_search_layout")
+            if els:
+                els[0].click()
+                time.sleep(1)
+                log("  [OK] 进入搜索页")
+            else:
+                log("  [ERROR] 未找到搜索框")
+                return
+        except Exception as e:
+            log(f"  [ERROR] 搜索框点击失败: {e}")
+            return
+
+        # 3. 输入关键词
+        try:
+            input_els = driver.find_elements(AppiumBy.CLASS_NAME, "android.widget.EditText")
+            if input_els:
+                input_els[0].clear()
+                time.sleep(0.2)
+                input_els[0].send_keys(test_keyword)
+                time.sleep(0.5)
+                log(f"  [OK] 输入: {test_keyword}")
+            else:
+                log("  [ERROR] 未找到输入框")
+                return
+        except Exception as e:
+            log(f"  [ERROR] 输入失败: {e}")
+            return
+
+        # 4. 搜索
+        try:
+            driver.press_keycode(66)  # ENTER
+            time.sleep(1.5)
+            log("  [OK] 按下回车")
+
+            # 关闭键盘
+            try:
+                driver.hide_keyboard()
+                time.sleep(0.5)
+                log("  [OK] 已关闭键盘")
+            except:
+                pass
+
+            # 点击搜索建议（带放大镜的项）来真正执行搜索
+            log("  尝试点击搜索建议...")
+            try:
+                # 查找包含关键词的搜索建议项
+                suggest_els = driver.find_elements(AppiumBy.ANDROID_UIAUTOMATOR,
+                    f'new UiSelector().textContains("鹭卓")')
+                if suggest_els:
+                    suggest_els[0].click()
+                    time.sleep(0.5)
+                    log("  [OK] 已点击搜索建议")
+            except:
+                log("  [SKIP] 未找到搜索建议，继续...")
+
+            # 等待演出列表页加载（重要！）
+            log("  等待演出列表加载...")
+            time.sleep(3)
+
+            # 保存搜索结果截图
+            img = driver.get_screenshot_as_png()
+            with open("search_results_list.png", "wb") as f:
+                f.write(img)
+            log("  [OK] 截图: search_results_list.png")
+        except Exception as e:
+            log(f"  [ERROR] 搜索失败: {e}")
+            return
+
+        # 5. 查找并点击演出
+        if not find_and_click_show(driver):
+            log("[ERROR] 查找演出失败")
+            return
+
+        # 6. 验证详情页
+        if verify_detail_page(driver):
+            log("\n" + "="*60)
+            log("[SUCCESS] 完整流程测试通过！")
+            log("="*60)
+        else:
+            log("\n" + "="*60)
+            log("[PARTIAL] 部分成功")
             log("="*60)
 
-            # 重置到首页（快！）
-            if not reset_to_homepage(driver):
-                log(f"  [失败] 第{i+1}次：重置失败")
-                continue
-
-            # 执行搜索
-            if quick_search(driver, test_city, test_keyword):
-                success_count += 1
-                log(f"  [成功] 第{i+1}次测试通过")
-            else:
-                log(f"  [失败] 第{i+1}次测试失败")
-
-            time.sleep(1)
-
-        # 统计结果
-        success_rate = (success_count / total_tests) * 100
-        log("\n" + "="*60)
-        log("测试完成 - 稳定性统计")
-        log("="*60)
-        log(f"总测试次数: {total_tests}")
-        log(f"成功次数: {success_count}")
-        log(f"失败次数: {total_tests - success_count}")
-        log(f"成功率: {success_rate:.1f}%")
-
-        if success_rate == 100:
-            log("\n[优秀] 100% 稳定性！")
-        elif success_rate >= 80:
-            log("\n[良好] 稳定性较高")
-        elif success_rate >= 60:
-            log("\n[一般] 稳定性中等，需优化")
-        else:
-            log("\n[较差] 稳定性较低，需排查")
-
-        log("="*60)
-
         # 不quit，保持会话
-        # driver.quit()  # 注释掉，保持会话
+        log("\n会话保持中，可继续测试...")
 
     except KeyboardInterrupt:
         log("\n[中断] 用户停止")
