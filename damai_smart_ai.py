@@ -42,7 +42,12 @@ def get_ocr():
     global _ocr_instance
     if _ocr_instance is None:
         from paddleocr import PaddleOCR
-        _ocr_instance = PaddleOCR(use_angle_cls=True, lang='ch', show_log=False)
+        # 兼容不同版本的PaddleOCR参数
+        try:
+            _ocr_instance = PaddleOCR(use_angle_cls=True, lang='ch', show_log=False)
+        except TypeError:
+            # 旧版本不支持show_log参数
+            _ocr_instance = PaddleOCR(use_angle_cls=True, lang='ch')
     return _ocr_instance
 
 
