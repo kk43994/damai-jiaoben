@@ -1094,8 +1094,27 @@ class SmartAIGUI:
                 self.log("[步骤2/3] 保存配置...", "INFO")
                 self.save_config()
 
-                # 步骤3: 初始化Appium连接
-                self.log("[步骤3/3] 初始化Appium连接...", "INFO")
+                # 步骤3: 检查Appium服务器
+                self.log("[步骤3/4] 检查Appium服务器...", "INFO")
+                import requests
+                try:
+                    response = requests.get("http://127.0.0.1:4723/status", timeout=3)
+                    if response.status_code == 200:
+                        self.log("Appium服务器运行正常", "OK")
+                    else:
+                        raise Exception(f"Appium服务器响应异常: {response.status_code}")
+                except requests.exceptions.ConnectionError:
+                    self.log("Appium服务器未启动!", "ERROR")
+                    self.log("请先启动Appium服务器:", "ERROR")
+                    self.log("  方法1: 运行 'appium' 命令", "ERROR")
+                    self.log("  方法2: 使用Appium Desktop应用", "ERROR")
+                    raise Exception("Appium服务器未启动 (http://127.0.0.1:4723)")
+                except requests.exceptions.Timeout:
+                    self.log("Appium服务器响应超时!", "ERROR")
+                    raise Exception("Appium服务器超时")
+
+                # 步骤4: 初始化Appium连接
+                self.log("[步骤4/4] 初始化Appium连接...", "INFO")
                 self.bot = DamaiBot()
                 self.status_label.config(text="● 已连接", fg="green")
                 self.log("Appium连接成功！", "OK")
