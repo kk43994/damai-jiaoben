@@ -578,12 +578,76 @@
     <section id="download">
         <div class="container">
             <h2>⬇️ 获取项目</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">选择最适合您的获取方式</p>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; color: var(--color-gray);">有两种获取方式，根据你的情况选择最适合的一种</p>
+
+            <div class="warning-box">
+                <h3>🤔 我应该选择哪种方式？</h3>
+                <table style="width: 100%; margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>你的情况</th>
+                            <th>推荐方式</th>
+                            <th>原因</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>✅ 网速比较快（10MB/s以上）<br>✅ 会使用Git命令<br>✅ 想要最简单的方法</td>
+                            <td><strong>方式一：自动下载脚本</strong></td>
+                            <td>全自动，省心省力</td>
+                        </tr>
+                        <tr>
+                            <td>⚠️ 网速比较慢或不稳定<br>⚠️ 不会用Git<br>⚠️ 需要分次下载</td>
+                            <td><strong>方式二：手动下载</strong></td>
+                            <td>可以使用国内镜像<br>可以分开下载，慢慢来</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4 style="margin-top: 2rem;">💡 两种方式的本质区别</h4>
+                <ul>
+                    <li><strong>方式一</strong>：就像自动洗衣机，你只需按一个按钮，它自动完成所有步骤</li>
+                    <li><strong>方式二</strong>：就像手洗衣服，你需要自己一步步操作，但更灵活</li>
+                </ul>
+
+                <p style="margin-top: 1rem;"><strong>如果不确定选哪个，建议先试试方式一，不行再用方式二。</strong></p>
+            </div>
 
             <!-- 方式一：自动下载脚本 -->
             <div class="highlight-box" style="border-left-color: var(--color-success);">
-                <h3 style="color: var(--color-success); margin-top: 0;">⭐ 方式一：自动下载脚本（推荐）</h3>
-                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">下载量约100MB | 耗时5-15分钟 | 适合网络条件好的用户</p>
+                <h3 style="color: var(--color-success); margin-top: 0;">⭐ 方式一：自动下载脚本（推荐新手）</h3>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">
+                    📊 下载量约100MB | ⏱️ 耗时5-15分钟 | 💻 适合网络条件好的用户
+                </p>
+
+                <div class="success-box">
+                    <h4>✅ 这种方式的优点：</h4>
+                    <ul>
+                        <li><strong>完全自动化</strong>：运行一个脚本，它会自动下载所有需要的文件</li>
+                        <li><strong>不容易出错</strong>：自动解压到正确位置，不需要你手动操作</li>
+                        <li><strong>节省时间</strong>：比手动下载快得多</li>
+                        <li><strong>下载量小</strong>：只下载必需的文件，约100MB</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ 前提条件（必须满足）：</h4>
+                    <ol>
+                        <li><strong>电脑上已安装Git</strong>
+                            <ul>
+                                <li>如果没安装，去 <a href="https://git-scm.com/downloads" target="_blank">https://git-scm.com/downloads</a> 下载安装</li>
+                                <li>安装时全部选默认选项即可</li>
+                                <li>安装后重启电脑</li>
+                            </ul>
+                        </li>
+                        <li><strong>网络连接稳定</strong>
+                            <ul>
+                                <li>下载过程需要5-15分钟不中断</li>
+                                <li>如果网络经常断线，建议用方式二</li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
 
                 <h4>📋 步骤：</h4>
                 <div class="steps">
@@ -706,18 +770,144 @@ npm config set registry https://registry.npmmirror.com</code></pre>
             <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">从零开始，手把手教你安装所有环境</p>
 
             <h3>第1步：安装Python环境</h3>
-            <div class="step">
-                <h3>下载Python</h3>
-                <p>访问Python官网：<a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a></p>
-                <p>下载Python 3.11或更高版本（推荐3.11.9）</p>
-                <p><strong>重要</strong>：安装时务必勾选"Add Python to PATH"</p>
+
+            <div class="warning-box">
+                <h4>⏱️ 预计耗时：5-10分钟</h4>
+                <h4>📌 什么是Python？</h4>
+                <p>Python是一种编程语言，我们的程序是用Python写的，所以电脑上必须先安装Python才能运行这个项目。就像你要看Word文档必须先安装Microsoft Office一样。</p>
             </div>
 
             <div class="step">
-                <h3>验证安装</h3>
-                <p>打开命令提示符（CMD），输入：</p>
+                <h3>1.1 下载Python安装包</h3>
+
+                <p><strong>第1步</strong>：打开浏览器（推荐使用Chrome或Edge）</p>
+
+                <p><strong>第2步</strong>：在地址栏输入以下网址并回车：</p>
+                <pre><code>https://www.python.org/downloads/</code></pre>
+
+                <p><strong>第3步</strong>：进入网站后，你会看到一个黄色的大按钮，上面写着"Download Python 3.x.x"</p>
+                <ul>
+                    <li>这个3.x.x就是版本号，比如3.11.9</li>
+                    <li><strong>重要</strong>：确保版本号是<strong>3.11</strong>或更高（3.12、3.13都可以）</li>
+                    <li>不要下载3.10或更低版本，可能会不兼容</li>
+                </ul>
+
+                <p><strong>第4步</strong>：点击黄色按钮，开始下载</p>
+                <ul>
+                    <li>文件大小约25MB</li>
+                    <li>下载时间根据网速，一般1-5分钟</li>
+                    <li>文件名类似：<code>python-3.11.9-amd64.exe</code></li>
+                    <li>下载完成后，文件通常在"下载"文件夹中</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>1.2 安装Python</h3>
+
+                <p><strong>第1步</strong>：找到刚才下载的<code>.exe</code>文件，双击打开</p>
+
+                <div class="danger-box">
+                    <h4>⚠️ 极其重要的一步！请仔细阅读！</h4>
+                    <p><strong>在安装界面的最下方</strong>，你会看到两个复选框，<strong>必须勾选</strong>第一个：</p>
+                    <pre><code>☑️ Add Python to PATH    ← 这个必须勾选！</code></pre>
+
+                    <h4>❓ 为什么这一步这么重要？</h4>
+                    <p>如果不勾选这个选项，电脑将无法识别Python命令，后续所有步骤都会失败。就像你买了一辆车但没有上牌照，无法上路行驶。</p>
+
+                    <h4>💡 如何确认已勾选？</h4>
+                    <p>复选框里应该有一个<strong>蓝色的勾✓</strong>，如果是空白的就点一下它。</p>
+                </div>
+
+                <p><strong>第2步</strong>：勾选"Add Python to PATH"后，点击<strong>"Install Now"</strong>（立即安装）</p>
+                <ul>
+                    <li>不要点击"Customize installation"（自定义安装），除非你很懂电脑</li>
+                    <li>安装过程约3-5分钟</li>
+                    <li>期间可能会弹出"用户账户控制"窗口，点击<strong>"是"</strong></li>
+                </ul>
+
+                <p><strong>第3步</strong>：等待安装完成</p>
+                <ul>
+                    <li>你会看到进度条，显示"Installing..."（正在安装）</li>
+                    <li>安装完成后会显示"Setup was successful"（安装成功）</li>
+                    <li>点击<strong>"Close"</strong>（关闭）按钮</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>1.3 验证Python是否安装成功</h3>
+
+                <h4>💡 什么是验证？为什么要验证？</h4>
+                <p>验证就是检查Python是否正确安装。就像你买了新手机，要开机看看能不能用一样。</p>
+
+                <h4>📝 如何打开命令提示符（CMD）？</h4>
+                <p><strong>方法1</strong>（推荐）：</p>
+                <ol>
+                    <li>按键盘上的<strong>Windows键</strong>（通常在Ctrl和Alt之间，有个Windows图标）</li>
+                    <li>直接输入<code>cmd</code>三个字母</li>
+                    <li>你会看到"命令提示符"这个应用，点击它</li>
+                </ol>
+
+                <p><strong>方法2</strong>：</p>
+                <ol>
+                    <li>同时按<strong>Windows键 + R</strong></li>
+                    <li>在弹出的"运行"窗口中输入<code>cmd</code></li>
+                    <li>按回车键</li>
+                </ol>
+
+                <p><strong>方法3</strong>：</p>
+                <ol>
+                    <li>点击开始菜单（屏幕左下角的Windows图标）</li>
+                    <li>找到"Windows系统"文件夹</li>
+                    <li>点击展开，找到"命令提示符"</li>
+                </ol>
+
+                <h4>✅ 打开CMD后会看到什么？</h4>
+                <p>一个黑色的窗口，里面有一些白色的文字，类似这样：</p>
+                <pre><code>C:\Users\你的用户名></code></pre>
+                <p>这个黑色窗口就是"命令提示符"，后面简称CMD。</p>
+
+                <h4>🧪 开始验证</h4>
+                <p><strong>第1步</strong>：在CMD窗口中，光标后面输入以下命令（不要多打空格）：</p>
                 <pre><code>python --version</code></pre>
-                <p>应显示：<code>Python 3.11.x</code></p>
+
+                <div class="warning-box">
+                    <h4>⚠️ 输入注意事项</h4>
+                    <ul>
+                        <li><code>python</code>后面有<strong>两个减号</strong><code>--</code>，不是一个</li>
+                        <li><code>--</code>和<code>version</code>之间有<strong>一个空格</strong></li>
+                        <li>全部都是<strong>小写英文字母</strong></li>
+                        <li>输入完成后按<strong>回车键</strong></li>
+                    </ul>
+                </div>
+
+                <p><strong>第2步</strong>：查看结果</p>
+
+                <div class="success-box">
+                    <h4>✅ 成功的情况</h4>
+                    <p>如果安装成功，CMD会显示：</p>
+                    <pre><code>Python 3.11.9</code></pre>
+                    <p>（数字可能略有不同，比如3.11.8、3.12.0等，只要是3.11以上就可以）</p>
+                    <p><strong>恭喜！Python已经安装成功！</strong>可以进行下一步了。</p>
+                </div>
+
+                <div class="danger-box">
+                    <h4>❌ 失败的情况</h4>
+                    <p>如果显示以下任何一种错误信息：</p>
+                    <pre><code>'python' 不是内部或外部命令，也不是可运行的程序或批处理文件。</code></pre>
+                    <p>或者英文版：</p>
+                    <pre><code>'python' is not recognized as an internal or external command</code></pre>
+
+                    <h4>🔧 解决方法</h4>
+                    <p><strong>原因</strong>：你在安装时<strong>没有勾选</strong>"Add Python to PATH"</p>
+                    <p><strong>解决办法</strong>：</p>
+                    <ol>
+                        <li>卸载刚才安装的Python（在"控制面板"-"程序和功能"中找到Python，右键卸载）</li>
+                        <li>重新下载Python安装包</li>
+                        <li><strong>这次一定要勾选"Add Python to PATH"</strong></li>
+                        <li>重新安装</li>
+                        <li>重新打开一个<strong>新的</strong>CMD窗口验证（必须是新的，旧的不行）</li>
+                    </ol>
+                </div>
             </div>
 
             <h3>第2步：安装Node.js环境</h3>
@@ -883,11 +1073,170 @@ cd damai-jiaoben</code></pre>
             </div>
 
             <h3>2. 设备连接</h3>
+
+            <div class="warning-box">
+                <h4>📌 什么是"设备连接"？</h4>
+                <p>简单理解：就是让你的电脑和红手指云手机"建立联系"，这样电脑才能控制云手机。</p>
+                <p><strong>比喻</strong>：就像你的手机要连接蓝牙耳机，必须先"配对"一样。</p>
+            </div>
+
             <div class="step">
-                <h3>点击"连接设备"按钮</h3>
-                <p>GUI会自动读取配置文件中的ADB端口，尝试连接红手指云手机</p>
-                <p><strong>成功提示</strong>：日志显示绿色"[SUCCESS] 设备连接成功"</p>
-                <p><strong>失败处理</strong>：点击"🏥 连接急救箱"诊断并修复连接问题</p>
+                <h3>2.1 准备工作</h3>
+
+                <p><strong>第1步</strong>：确保红手指云手机已开启</p>
+                <ul>
+                    <li>登录红手指官网：<a href="https://www.redfinger.com/" target="_blank">https://www.redfinger.com/</a></li>
+                    <li>在控制台中，你的云手机状态应该显示为<strong>"运行中"</strong>或<strong>"在线"</strong></li>
+                    <li>如果显示"已停止"或"离线"，点击"启动"按钮</li>
+                    <li>等待约1-2分钟，直到云手机完全启动</li>
+                </ul>
+
+                <p><strong>第2步</strong>：确认ADB端口号</p>
+                <ul>
+                    <li>在红手指控制台，点击你的云手机</li>
+                    <li>找到"查看详情"或"ADB连接"按钮</li>
+                    <li>你会看到一个5位数字的端口号，比如：<code>12345</code></li>
+                    <li><strong>记住这个端口号</strong>，后面会用到</li>
+                </ul>
+
+                <p><strong>第3步</strong>：检查配置文件中的端口号</p>
+                <ul>
+                    <li>打开项目文件夹，找到<code>damai_appium/config.jsonc</code>文件</li>
+                    <li>右键 → 用记事本打开（或任何文本编辑器）</li>
+                    <li>找到这一行：<code>"adb_port": "12345",</code></li>
+                    <li>把<code>12345</code>改成你的实际端口号</li>
+                    <li>保存文件（Ctrl + S）</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>2.2 开始连接</h3>
+
+                <p><strong>第1步</strong>：在GUI界面中找到"连接设备"按钮</p>
+                <ul>
+                    <li>这个按钮通常在GUI的<strong>左上角</strong></li>
+                    <li>按钮上写着"连接设备"或"Connect Device"</li>
+                </ul>
+
+                <p><strong>第2步</strong>：点击"连接设备"按钮</p>
+                <ul>
+                    <li>点击后，按钮可能会变灰（表示正在连接）</li>
+                    <li>等待3-10秒</li>
+                    <li>期间GUI会自动读取配置文件中的ADB端口</li>
+                </ul>
+
+                <p><strong>第3步</strong>：查看连接结果</p>
+            </div>
+
+            <div class="step">
+                <h3>2.3 判断连接是否成功</h3>
+
+                <div class="success-box">
+                    <h4>✅ 成功的情况</h4>
+                    <p>在GUI的日志区域（通常是窗口下方的黑色框），你会看到<strong>绿色</strong>的文字：</p>
+                    <pre><code>[SUCCESS] 设备连接成功</code></pre>
+                    <p>或者：</p>
+                    <pre><code>[SUCCESS] Device connected successfully</code></pre>
+
+                    <h5>还可能看到以下信息：</h5>
+                    <ul>
+                        <li><code>[INFO] 设备型号: xxx</code></li>
+                        <li><code>[INFO] Android版本: x.x</code></li>
+                        <li><code>[INFO] 屏幕分辨率: 1920x1080</code></li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;"><strong>恭喜！连接成功，可以进行下一步了！</strong></p>
+                </div>
+
+                <div class="danger-box">
+                    <h4>❌ 失败的情况</h4>
+                    <p>如果看到<strong>红色</strong>的错误信息，比如：</p>
+                    <pre><code>[ERROR] 设备连接失败</code></pre>
+                    <pre><code>[ERROR] Cannot connect to device</code></pre>
+                    <pre><code>[ERROR] ADB connection failed</code></pre>
+
+                    <h5>🔧 解决方法一：使用连接急救箱（推荐）</h5>
+                    <p>这是最简单的方法，让程序自动诊断并修复问题：</p>
+                    <ol>
+                        <li>在GUI界面找到"🏥 连接急救箱"按钮（通常在"连接设备"旁边）</li>
+                        <li>点击这个按钮</li>
+                        <li>会弹出一个新窗口</li>
+                        <li>按照窗口中的提示操作：
+                            <ul>
+                                <li>如果提示输入端口号，输入你的红手指ADB端口</li>
+                                <li>点击"自动诊断"或"一键修复"按钮</li>
+                                <li>等待程序自动检测和修复问题</li>
+                            </ul>
+                        </li>
+                        <li>修复完成后，重新点击"连接设备"</li>
+                    </ol>
+
+                    <h5>🔧 解决方法二：手动检查</h5>
+                    <p>如果急救箱也无法解决，按以下步骤逐一检查：</p>
+                    <ol>
+                        <li><strong>检查红手指云手机是否在线</strong>
+                            <ul>
+                                <li>登录红手指控制台</li>
+                                <li>确认云手机状态是"运行中"</li>
+                                <li>如果不是，点击"启动"</li>
+                            </ul>
+                        </li>
+                        <li><strong>检查ADB端口号是否正确</strong>
+                            <ul>
+                                <li>红手指控制台显示的端口号</li>
+                                <li>配置文件<code>config.jsonc</code>中的端口号</li>
+                                <li>这两个端口号必须<strong>完全一致</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>检查网络连接</strong>
+                            <ul>
+                                <li>确保电脑能上网</li>
+                                <li>尝试打开其他网页，看网络是否正常</li>
+                            </ul>
+                        </li>
+                        <li><strong>重启Appium服务器</strong>
+                            <ul>
+                                <li>关闭GUI程序</li>
+                                <li>重新运行<code>一键启动.bat</code></li>
+                            </ul>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="warning-box">
+                    <h4>💡 常见错误和原因</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>错误信息</th>
+                                <th>可能原因</th>
+                                <th>解决方法</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>device offline</code></td>
+                                <td>云手机未启动或掉线</td>
+                                <td>在红手指控制台重新启动云手机</td>
+                            </tr>
+                            <tr>
+                                <td><code>cannot connect to 127.0.0.1:xxxxx</code></td>
+                                <td>端口号错误</td>
+                                <td>检查配置文件中的端口号</td>
+                            </tr>
+                            <tr>
+                                <td><code>ADB not found</code></td>
+                                <td>ADB工具未安装</td>
+                                <td>重新运行<code>一键配置.bat</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>WebDriver error</code></td>
+                                <td>Appium服务器未启动</td>
+                                <td>确保已运行<code>一键启动.bat</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <h3>3. 配置演出信息</h3>
