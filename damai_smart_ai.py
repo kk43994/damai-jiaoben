@@ -588,6 +588,9 @@ class SmartAIGUI:
         # 刷新设备列表
         self.root.after(500, self.refresh_devices)
 
+        # 启动时弹出法律免责声明（延迟300ms，确保主窗口已完全加载）
+        self.root.after(300, self.show_disclaimer_window)
+
     def create_widgets(self):
         """创建界面"""
 
@@ -613,52 +616,24 @@ class SmartAIGUI:
         )
         version_label.pack(pady=(0, 8))
 
-        # ⚠️ 法律免责声明框（红色警告框）
-        disclaimer_frame = tk.Frame(self.root, bg="#dc3545", relief=tk.RIDGE, borderwidth=3)
-        disclaimer_frame.pack(fill=tk.X, padx=10, pady=(5, 0))
+        # ⚠️ 法律免责声明横条（紧凑版）
+        disclaimer_bar = tk.Frame(self.root, bg="#dc3545", height=22)
+        disclaimer_bar.pack(fill=tk.X, padx=10, pady=(3, 5))
+        disclaimer_bar.pack_propagate(False)  # 固定高度
 
-        # 警告图标和主标题
-        warning_title = tk.Label(
-            disclaimer_frame,
-            text="⚠️  法律声明与使用须知  ⚠️",
-            font=("微软雅黑", 11, "bold"),
-            bg="#dc3545",
-            fg="white"
-        )
-        warning_title.pack(pady=(8, 5))
+        disclaimer_text = "⚠️ 法律声明：仅供技术学习 | 严禁商业倒卖/违法犯罪 | 使用者违法后果自负 | 点击查看详情"
 
-        # 免责声明内容（白色背景）
-        disclaimer_content = tk.Frame(disclaimer_frame, bg="#fff3cd", relief=tk.SUNKEN, borderwidth=1)
-        disclaimer_content.pack(fill=tk.X, padx=8, pady=(0, 8))
-
-        disclaimer_text = (
-            "• 本脚本仅供技术交流学习使用，严禁用于任何违法犯罪活动\n"
-            "• 禁止商业倒卖门票、禁止恶意抢票、禁止破坏平台公平秩序\n"
-            "• 禁止通过学习本脚本进行任何违反法律法规的行为\n"
-            "• 本项目已开源于GitHub平台，完全免费，仅作教学研究用途\n"
-            "• 使用者的一切违法违规行为由使用者本人承担，与开发者无关"
-        )
-
-        disclaimer_label = tk.Label(
-            disclaimer_content,
+        # 使用Button样式但无边框，可点击查看详情
+        self.disclaimer_label = tk.Label(
+            disclaimer_bar,
             text=disclaimer_text,
-            font=("微软雅黑", 8),
-            bg="#fff3cd",
-            fg="#856404",
-            justify=tk.LEFT,
-            anchor="w"
-        )
-        disclaimer_label.pack(padx=10, pady=8, fill=tk.X)
-
-        # 底部强调（红色小字）
-        disclaimer_footer = tk.Label(
-            disclaimer_frame,
-            text="⚠️ 违法使用后果自负 | 开发者不承担任何法律责任 ⚠️",
-            font=("微软雅黑", 8, "bold"),
+            font=("微软雅黑", 7),
             bg="#dc3545",
-            fg="yellow"
+            fg="yellow",
+            cursor="hand2"
         )
-        disclaimer_footer.pack(pady=(0, 6))
+        self.disclaimer_label.pack(fill=tk.BOTH, expand=True)
+        self.disclaimer_label.bind("<Button-1>", lambda e: self.show_disclaimer_window())
 
         # 主内容区
         main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
@@ -1011,6 +986,127 @@ class SmartAIGUI:
         except UnicodeEncodeError:
             # Windows GBK环境下忽略编码错误
             pass
+
+    def show_disclaimer_window(self):
+        """显示法律免责声明悬浮窗"""
+        # 创建置顶窗口
+        disclaimer_win = tk.Toplevel(self.root)
+        disclaimer_win.title("⚠️ 法律声明与使用须知")
+        disclaimer_win.geometry("550x450")
+        disclaimer_win.resizable(False, False)
+        disclaimer_win.attributes('-topmost', True)  # 窗口置顶
+
+        # 居中显示
+        disclaimer_win.update_idletasks()
+        x = (disclaimer_win.winfo_screenwidth() // 2) - (550 // 2)
+        y = (disclaimer_win.winfo_screenheight() // 2) - (450 // 2)
+        disclaimer_win.geometry(f"550x450+{x}+{y}")
+
+        # 红色标题栏
+        title_frame = tk.Frame(disclaimer_win, bg="#dc3545", height=60)
+        title_frame.pack(fill=tk.X)
+        title_frame.pack_propagate(False)
+
+        title_label = tk.Label(
+            title_frame,
+            text="⚠️  法律声明与使用须知  ⚠️",
+            font=("微软雅黑", 16, "bold"),
+            bg="#dc3545",
+            fg="white"
+        )
+        title_label.pack(pady=15)
+
+        # 主内容区（带滚动条）
+        content_frame = tk.Frame(disclaimer_win, bg="white")
+        content_frame.pack(fill=tk.BOTH, expand=True, padx=15, pady=10)
+
+        # 创建滚动文本框
+        text_widget = scrolledtext.ScrolledText(
+            content_frame,
+            wrap=tk.WORD,
+            font=("微软雅黑", 10),
+            bg="#fffef5",
+            relief=tk.FLAT,
+            padx=15,
+            pady=15
+        )
+        text_widget.pack(fill=tk.BOTH, expand=True)
+
+        # 插入免责声明内容
+        disclaimer_content = """🚨 重要提示
+
+本项目为技术学习与研究项目，集成OCR识别和自动决策技术，仅供教学交流使用。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📜 使用声明
+
+✅ 本项目完全开源免费，托管于GitHub平台
+✅ 仅供个人学习、技术研究、教学演示使用
+
+❌ 严禁用于任何违法犯罪活动
+❌ 严禁商业倒卖门票、恶意抢票
+❌ 严禁破坏平台公平秩序
+❌ 严禁通过学习本项目进行任何违反法律法规的行为
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚖️ 法律责任
+
+根据《中华人民共和国刑法》及相关司法解释：
+
+• 开发者已明确声明本项目用途和使用限制
+• 使用者的一切违法违规行为由使用者本人承担全部法律责任
+• 与本项目开发者、贡献者无任何法律关系
+• 使用本项目即视为同意本声明的所有条款
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 合法使用场景
+
+✅ 学习Python自动化技术
+✅ 研究Appium移动端自动化
+✅ 研究OCR文字识别技术
+✅ 教学演示自动化决策流程
+✅ 技术竞赛、课程作业
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ 特别说明
+
+根据最高人民检察院关于"帮助信息网络犯罪活动罪"的司法解释，开发者已通过本声明履行告知义务，明确禁止将本项目用于违法用途。
+
+任何违反本声明的使用行为，法律责任由使用者自行承担。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"""
+
+        text_widget.insert("1.0", disclaimer_content)
+        text_widget.config(state=tk.DISABLED)  # 禁止编辑
+
+        # 底部按钮区
+        btn_frame = tk.Frame(disclaimer_win, bg="white")
+        btn_frame.pack(fill=tk.X, padx=15, pady=(0, 15))
+
+        # 同意并继续按钮
+        agree_btn = tk.Button(
+            btn_frame,
+            text="✓ 我已阅读并同意遵守以上声明",
+            font=("微软雅黑", 11, "bold"),
+            bg="#28a745",
+            fg="white",
+            activebackground="#218838",
+            activeforeground="white",
+            relief=tk.FLAT,
+            cursor="hand2",
+            command=disclaimer_win.destroy,
+            height=2
+        )
+        agree_btn.pack(fill=tk.X)
+
+        # 聚焦到窗口
+        disclaimer_win.focus_set()
 
     def load_config(self):
         """加载配置"""
