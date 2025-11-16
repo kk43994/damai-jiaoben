@@ -631,22 +631,153 @@
                 </div>
 
                 <div class="warning-box">
-                    <h4>⚠️ 前提条件（必须满足）：</h4>
+                    <h4>⚠️ 前提条件（必须先完成这两件事）：</h4>
+
+                    <h5>📌 前提1：电脑上必须有一个叫"Git"的软件</h5>
+
+                    <div class="highlight-box">
+                        <h4>❓ Git是什么？我为什么需要它？</h4>
+                        <p><strong>通俗解释</strong>：Git就是一个下载工具，专门用来从GitHub网站上下载代码项目。</p>
+
+                        <h5>💡 用生活场景打比方：</h5>
+                        <ul>
+                            <li>GitHub = 一个存放代码的仓库（就像图书馆）</li>
+                            <li>Git = 去图书馆借书的借书证</li>
+                            <li>我们的项目 = 图书馆里的一本书</li>
+                        </ul>
+                        <p><strong>没有Git，你就无法从GitHub下载项目。</strong>就像没有借书证就无法从图书馆借书一样。</p>
+                    </div>
+
+                    <h5>🔍 如何检查电脑上有没有Git？</h5>
+                    <p><strong>超简单的检查方法</strong>（只需30秒）：</p>
                     <ol>
-                        <li><strong>电脑上已安装Git</strong>
-                            <ul>
-                                <li>如果没安装，去 <a href="https://git-scm.com/downloads" target="_blank">https://git-scm.com/downloads</a> 下载安装</li>
-                                <li>安装时全部选默认选项即可</li>
-                                <li>安装后重启电脑</li>
-                            </ul>
-                        </li>
-                        <li><strong>网络连接稳定</strong>
-                            <ul>
-                                <li>下载过程需要5-15分钟不中断</li>
-                                <li>如果网络经常断线，建议用方式二</li>
-                            </ul>
-                        </li>
+                        <li>按键盘上的<strong>Windows键</strong>（通常在Ctrl和Alt之间，有个窗户图标）</li>
+                        <li>直接输入三个字母：<code>cmd</code></li>
+                        <li>点击出现的"命令提示符"（一个黑色方块图标）</li>
+                        <li>在弹出的黑色窗口中输入：<code>git --version</code>（注意两个减号）</li>
+                        <li>按回车键</li>
                     </ol>
+
+                    <div class="success-box">
+                        <h5>✅ 如果你看到类似这样的文字：</h5>
+                        <pre><code>git version 2.40.0</code></pre>
+                        <p>（数字可能不一样，只要有"git version"就行）</p>
+                        <p><strong>恭喜！你的电脑已经有Git了，可以直接使用方式一！</strong></p>
+                        <p>关闭这个黑色窗口，继续往下看步骤即可。</p>
+                    </div>
+
+                    <div class="danger-box">
+                        <h5>❌ 如果你看到这样的错误：</h5>
+                        <pre><code>'git' 不是内部或外部命令</code></pre>
+                        <p>或者英文版本：</p>
+                        <pre><code>'git' is not recognized as an internal or external command</code></pre>
+                        <p><strong>说明你的电脑上还没有Git，需要先安装。</strong></p>
+                        <p>别担心，安装很简单，跟着下面的步骤做：</p>
+                    </div>
+
+                    <h5>📥 如何安装Git？（预计5分钟）</h5>
+
+                    <div class="steps" style="counter-reset: git-step;">
+                        <div class="step" style="counter-increment: git-step;">
+                            <h4>下载Git安装包</h4>
+                            <p><strong>第1小步</strong>：打开浏览器（Chrome、Edge、Firefox都可以）</p>
+                            <p><strong>第2小步</strong>：在地址栏输入这个网址：</p>
+                            <pre><code>https://git-scm.com/downloads</code></pre>
+                            <p><strong>第3小步</strong>：网页打开后，你会看到一个大按钮，可能写着：</p>
+                            <ul>
+                                <li>"Download for Windows"（Windows下载）</li>
+                                <li>或者直接显示"Windows"</li>
+                            </ul>
+                            <p><strong>第4小步</strong>：点击这个按钮</p>
+                            <p><strong>第5小步</strong>：下载会自动开始（文件大约50MB，下载时间约2-5分钟）</p>
+                            <p><strong>第6小步</strong>：下载完成后，文件名类似：<code>Git-2.40.0-64-bit.exe</code></p>
+                        </div>
+
+                        <div class="step" style="counter-increment: git-step;">
+                            <h4>安装Git</h4>
+                            <p><strong>第1小步</strong>：找到刚才下载的<code>.exe</code>文件</p>
+                            <ul>
+                                <li>通常在"下载"文件夹中</li>
+                                <li>文件图标是一个红色的分叉标志</li>
+                            </ul>
+
+                            <p><strong>第2小步</strong>：双击这个文件</p>
+                            <ul>
+                                <li>可能会弹出"用户账户控制"窗口</li>
+                                <li>点击<strong>"是"</strong>或<strong>"允许"</strong></li>
+                            </ul>
+
+                            <p><strong>第3小步</strong>：安装过程中会出现很多选择界面</p>
+                            <div class="warning-box">
+                                <h5>⚠️ 重要提示：全部点"Next"（下一步）就行！</h5>
+                                <p>不要改任何设置，直接一路点"Next"（下一步）按钮。</p>
+                                <p>你会看到大约<strong>7-8个</strong>选择界面，每个都点"Next"。</p>
+                                <p>最后一个界面会变成"Install"（安装）或"Finish"（完成），点它。</p>
+                            </div>
+
+                            <p><strong>第4小步</strong>：等待安装</p>
+                            <ul>
+                                <li>会看到进度条</li>
+                                <li>安装时间约1-2分钟</li>
+                            </ul>
+
+                            <p><strong>第5小步</strong>：安装完成</p>
+                            <ul>
+                                <li>点击"Finish"（完成）按钮</li>
+                                <li>可能会打开一个网页，直接关掉就行</li>
+                            </ul>
+                        </div>
+
+                        <div class="step" style="counter-increment: git-step;">
+                            <h4>验证Git是否安装成功</h4>
+                            <p><strong>重要</strong>：必须<strong>重新打开一个新的CMD窗口</strong>（旧的不行）</p>
+
+                            <p><strong>第1小步</strong>：如果之前的CMD窗口还开着，先关掉它（点右上角的×）</p>
+
+                            <p><strong>第2小步</strong>：重新打开CMD窗口</p>
+                            <ul>
+                                <li>按Windows键</li>
+                                <li>输入<code>cmd</code></li>
+                                <li>点击"命令提示符"</li>
+                            </ul>
+
+                            <p><strong>第3小步</strong>：在新的CMD窗口中输入：</p>
+                            <pre><code>git --version</code></pre>
+                            <p>（注意是两个减号<code>--</code>，然后按回车）</p>
+
+                            <div class="success-box">
+                                <p><strong>如果显示</strong>：</p>
+                                <pre><code>git version 2.40.0</code></pre>
+                                <p><strong>恭喜！Git安装成功了！</strong></p>
+                                <p>关闭CMD窗口，继续下面的步骤。</p>
+                            </div>
+
+                            <div class="danger-box">
+                                <p><strong>如果还是显示错误</strong>：</p>
+                                <pre><code>'git' 不是内部或外部命令</code></pre>
+                                <p><strong>解决办法</strong>：</p>
+                                <ol>
+                                    <li><strong>重启电脑</strong>（这一步很重要！）</li>
+                                    <li>重启后重新打开CMD</li>
+                                    <li>再次输入<code>git --version</code>检查</li>
+                                    <li>如果还不行，可能需要重新安装Git（卸载后重装）</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5>📌 前提2：网络连接要稳定</h5>
+                    <ul>
+                        <li><strong>什么叫稳定</strong>：下载过程中（大约5-15分钟）网络不能断</li>
+                        <li><strong>如何判断</strong>：
+                            <ul>
+                                <li>能正常打开网页</li>
+                                <li>能正常看视频</li>
+                                <li>WiFi信号满格</li>
+                            </ul>
+                        </li>
+                        <li><strong>如果网络不稳定</strong>：建议使用<strong>方式二：手动下载</strong>（可以慢慢下载，断了可以继续）</li>
+                    </ul>
                 </div>
 
                 <h4>📋 步骤：</h4>
@@ -911,60 +1042,577 @@ npm config set registry https://registry.npmmirror.com</code></pre>
             </div>
 
             <h3>第2步：安装Node.js环境</h3>
-            <div class="step">
-                <h3>下载Node.js</h3>
-                <p>访问Node.js官网：<a href="https://nodejs.org/" target="_blank">https://nodejs.org/</a></p>
-                <p>下载LTS版本（推荐20.x）</p>
-                <p>运行安装程序，全部选择默认选项</p>
+
+            <div class="warning-box">
+                <h4>⏱️ 预计耗时：5-10分钟</h4>
+                <h4>📌 什么是Node.js？</h4>
+                <p>Node.js是一个运行环境，Appium需要它才能工作。</p>
+
+                <h5>💡 用生活场景打比方：</h5>
+                <ul>
+                    <li>Appium = 一辆汽车（自动化工具）</li>
+                    <li>Node.js = 汽油（没有汽油车开不了）</li>
+                    <li>我们的项目 = 驾驶员（控制汽车）</li>
+                </ul>
+                <p><strong>简单说</strong>：没有Node.js，Appium就无法运行。</p>
             </div>
 
             <div class="step">
-                <h3>验证安装</h3>
-                <pre><code>node --version
-npm --version</code></pre>
+                <h3>2.1 下载Node.js安装包</h3>
+
+                <p><strong>第1步</strong>：打开浏览器</p>
+
+                <p><strong>第2步</strong>：在地址栏输入Node.js官网地址：</p>
+                <pre><code>https://nodejs.org/</code></pre>
+
+                <p><strong>第3步</strong>：进入网站后，你会看到两个绿色的大按钮</p>
+                <ul>
+                    <li>左边的写着"LTS"（推荐）</li>
+                    <li>右边的写着"Current"（最新版）</li>
+                </ul>
+
+                <div class="success-box">
+                    <h4>✅ 选择哪个版本？</h4>
+                    <p><strong>点击左边的"LTS"版本！</strong></p>
+                    <p>LTS = Long Term Support（长期支持版），更稳定，不容易出问题</p>
+                    <p>版本号通常是<strong>20.x.x</strong>或<strong>22.x.x</strong>（数字可能不同）</p>
+                </div>
+
+                <p><strong>第4步</strong>：点击LTS按钮，下载会自动开始</p>
+                <ul>
+                    <li>文件大小约30MB</li>
+                    <li>下载时间约2-5分钟</li>
+                    <li>文件名类似：<code>node-v20.11.1-x64.msi</code></li>
+                    <li>下载完成后在"下载"文件夹中</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>2.2 安装Node.js</h3>
+
+                <p><strong>第1步</strong>：找到刚才下载的<code>.msi</code>文件，双击打开</p>
+
+                <p><strong>第2步</strong>：可能会弹出"用户账户控制"窗口</p>
+                <ul>
+                    <li>点击<strong>"是"</strong>或<strong>"允许"</strong></li>
+                </ul>
+
+                <p><strong>第3步</strong>：进入安装向导</p>
+                <div class="success-box">
+                    <h4>✅ 安装很简单：一路点"Next"就行！</h4>
+                    <p>你会看到大约<strong>5-6个</strong>界面，每个都点<strong>"Next"</strong>（下一步）按钮。</p>
+                    <p><strong>不需要改任何设置！</strong>保持默认就好。</p>
+                </div>
+
+                <p><strong>第4步</strong>：重要的选项界面</p>
+                <p>在安装过程中，有一个界面会问你：</p>
+                <pre><code>Automatically install the necessary tools...</code></pre>
+                <p>（自动安装必要的工具...）</p>
+                <div class="warning-box">
+                    <h4>⚠️ 这个选项<strong>不要勾选</strong>！</h4>
+                    <p>保持这个复选框为<strong>空白</strong>（不要有勾✓），然后点"Next"</p>
+                    <p><strong>为什么？</strong>因为勾选后会安装一大堆不需要的工具，浪费时间和空间。</p>
+                </div>
+
+                <p><strong>第5步</strong>：开始安装</p>
+                <ul>
+                    <li>最后一个界面会显示"Install"（安装）按钮，点击它</li>
+                    <li>等待安装（约2-3分钟）</li>
+                    <li>会看到进度条，显示"Installing..."</li>
+                </ul>
+
+                <p><strong>第6步</strong>：安装完成</p>
+                <ul>
+                    <li>会显示"Completed"（完成）或"Finish"（结束）</li>
+                    <li>点击<strong>"Finish"</strong>按钮</li>
+                    <li>不需要勾选"Launch..."（启动...），直接点Finish</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>2.3 验证Node.js是否安装成功</h3>
+
+                <h4>💡 为什么要验证两个命令？</h4>
+                <p>Node.js安装包含两个工具：</p>
+                <ul>
+                    <li><strong>node</strong> = Node.js运行环境（汽车的发动机）</li>
+                    <li><strong>npm</strong> = 包管理工具（用来安装其他软件的工具，类似应用商店）</li>
+                </ul>
+                <p>两个都要验证，确保都安装成功了。</p>
+
+                <h4>🧪 开始验证</h4>
+                <p><strong>第1步</strong>：打开CMD命令提示符</p>
+                <ul>
+                    <li>按<strong>Windows键</strong></li>
+                    <li>输入<code>cmd</code></li>
+                    <li>点击"命令提示符"</li>
+                </ul>
+
+                <p><strong>第2步</strong>：验证node（在CMD中输入以下命令，然后按回车）</p>
+                <pre><code>node --version</code></pre>
+
+                <div class="success-box">
+                    <h5>✅ 成功的情况</h5>
+                    <p>如果显示：</p>
+                    <pre><code>v20.11.1</code></pre>
+                    <p>（数字可能不同，只要有v开头就成功了）</p>
+                    <p><strong>恭喜！Node.js安装成功！</strong></p>
+                </div>
+
+                <p><strong>第3步</strong>：验证npm（在CMD中输入以下命令，然后按回车）</p>
+                <pre><code>npm --version</code></pre>
+
+                <div class="success-box">
+                    <h5>✅ 成功的情况</h5>
+                    <p>如果显示：</p>
+                    <pre><code>10.2.4</code></pre>
+                    <p>（数字可能不同，只要显示数字就成功了）</p>
+                    <p><strong>太好了！npm也安装成功了！</strong></p>
+                </div>
+
+                <div class="danger-box">
+                    <h5>❌ 如果出现错误</h5>
+                    <p>显示类似：</p>
+                    <pre><code>'node' 不是内部或外部命令</code></pre>
+                    <p>或</p>
+                    <pre><code>'npm' 不是内部或外部命令</code></pre>
+
+                    <h5>🔧 解决方法</h5>
+                    <ol>
+                        <li><strong>先关闭CMD窗口</strong></li>
+                        <li><strong>重启电脑</strong>（很重要！）</li>
+                        <li>重启后重新打开CMD</li>
+                        <li>再次输入<code>node --version</code>和<code>npm --version</code>检查</li>
+                        <li>如果还不行，可能需要卸载后重新安装Node.js</li>
+                    </ol>
+                </div>
             </div>
 
             <h3>第3步：安装Android SDK</h3>
-            <div class="step">
-                <h3>下载Android SDK Platform Tools</h3>
-                <p>访问：<a href="https://developer.android.com/studio/releases/platform-tools" target="_blank">https://developer.android.com/studio/releases/platform-tools</a></p>
-                <p>下载Windows版本，解压到任意目录（如<code>C:\android-sdk\</code>）</p>
+
+            <div class="warning-box">
+                <h4>⏱️ 预计耗时：10-15分钟</h4>
+                <h4>📌 什么是Android SDK？</h4>
+                <p>SDK = Software Development Kit（软件开发工具包）</p>
+                <p>Android SDK包含了ADB工具，ADB是用来连接和控制Android设备的。</p>
+
+                <h5>💡 用生活场景打比方：</h5>
+                <ul>
+                    <li>你的手机/云手机 = 一台电视机</li>
+                    <li>ADB工具 = 电视遥控器</li>
+                    <li>我们的程序 = 你的手（操作遥控器）</li>
+                </ul>
+                <p><strong>简单说</strong>：没有ADB，电脑就无法连接和控制手机。</p>
             </div>
 
             <div class="step">
-                <h3>配置环境变量</h3>
+                <h3>3.1 下载Android SDK Platform Tools</h3>
+
+                <p><strong>第1步</strong>：打开浏览器</p>
+
+                <p><strong>第2步</strong>：在地址栏输入以下网址：</p>
+                <pre><code>https://developer.android.com/studio/releases/platform-tools</code></pre>
+
+                <div class="warning-box">
+                    <h4>⚠️ 如果网页打不开或很慢</h4>
+                    <p>Google的网站在国内可能比较慢，可以尝试：</p>
+                    <ol>
+                        <li>多刷新几次</li>
+                        <li>换个时间段访问</li>
+                        <li>或者直接使用下面的<strong>国内镜像地址</strong>（更快）：</li>
+                    </ol>
+                    <pre><code>https://www.androiddevtools.cn/</code></pre>
+                    <p>进入后，找到"SDK Platform Tools"，下载Windows版本</p>
+                </div>
+
+                <p><strong>第3步</strong>：在官网页面向下滚动，找到"Downloads"（下载）部分</p>
+
+                <p><strong>第4步</strong>：找到"SDK Platform Tools for Windows"</p>
+                <ul>
+                    <li>会看到一个链接，写着"Download SDK Platform-Tools for Windows"</li>
+                    <li>点击这个链接</li>
+                </ul>
+
+                <p><strong>第5步</strong>：弹出协议对话框</p>
+                <ul>
+                    <li>会弹出一个窗口，显示使用条款</li>
+                    <li>勾选底部的"I have read and agree..."（我已阅读并同意...）</li>
+                    <li>点击下方的蓝色按钮"Download Android SDK Platform-Tools for Windows"</li>
+                </ul>
+
+                <p><strong>第6步</strong>：开始下载</p>
+                <ul>
+                    <li>文件大小约10MB</li>
+                    <li>下载时间约1-3分钟</li>
+                    <li>文件名：<code>platform-tools-latest-windows.zip</code></li>
+                    <li>下载完成后在"下载"文件夹中</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>3.2 解压SDK文件</h3>
+
+                <p><strong>第1步</strong>：找到刚才下载的<code>platform-tools-latest-windows.zip</code>文件</p>
+
+                <p><strong>第2步</strong>：决定解压到哪里</p>
+                <div class="success-box">
+                    <h4>✅ 推荐的解压位置</h4>
+                    <p>建议解压到C盘根目录，路径更短，更容易记住：</p>
+                    <pre><code>C:\android-sdk\</code></pre>
+                    <p><strong>为什么选这里？</strong></p>
+                    <ul>
+                        <li>路径简单，不容易出错</li>
+                        <li>后面配置环境变量时更方便</li>
+                        <li>不会被误删（不在桌面或下载文件夹）</li>
+                    </ul>
+                </div>
+
+                <p><strong>第3步</strong>：创建android-sdk文件夹</p>
                 <ol>
-                    <li>右键"此电脑" → 属性 → 高级系统设置</li>
-                    <li>点击"环境变量"</li>
-                    <li>在"系统变量"中找到"Path"，点击"编辑"</li>
-                    <li>点击"新建"，添加：<code>C:\android-sdk\platform-tools</code></li>
-                    <li>确定保存</li>
+                    <li>打开"此电脑"或"我的电脑"</li>
+                    <li>双击进入<strong>C盘</strong></li>
+                    <li>在C盘空白处<strong>右键</strong> → 新建 → 文件夹</li>
+                    <li>文件夹命名为：<code>android-sdk</code>（全部小写，中间有减号）</li>
+                </ol>
+
+                <p><strong>第4步</strong>：解压ZIP文件</p>
+                <ol>
+                    <li>回到"下载"文件夹，找到<code>platform-tools-latest-windows.zip</code></li>
+                    <li><strong>右键</strong>点击这个ZIP文件</li>
+                    <li>选择"<strong>全部提取...</strong>"或"<strong>解压缩到...</strong>"</li>
+                    <li>在弹出的窗口中，点击"<strong>浏览</strong>"按钮</li>
+                    <li>找到并选择刚才创建的<code>C:\android-sdk\</code>文件夹</li>
+                    <li>点击"<strong>提取</strong>"或"<strong>确定</strong>"</li>
+                </ol>
+
+                <p><strong>第5步</strong>：验证解压结果</p>
+                <p>打开<code>C:\android-sdk\</code>文件夹，你应该看到一个<code>platform-tools</code>文件夹</p>
+                <p>打开<code>platform-tools</code>文件夹，里面应该有很多文件，其中包括<code>adb.exe</code></p>
+                <p>完整路径应该是：<code>C:\android-sdk\platform-tools\adb.exe</code></p>
+            </div>
+
+            <div class="step">
+                <h3>3.3 配置环境变量</h3>
+
+                <div class="warning-box">
+                    <h4>❓ 什么是环境变量？为什么要配置？</h4>
+                    <p><strong>通俗解释</strong>：环境变量就像给电脑建一个"快捷方式列表"</p>
+                    <p>配置后，你在CMD里输入<code>adb</code>，电脑就知道去<code>C:\android-sdk\platform-tools\</code>找这个程序</p>
+                    <p>如果不配置，电脑会说"找不到adb"</p>
+                </div>
+
+                <h4>📝 超详细配置步骤</h4>
+
+                <p><strong>第1步</strong>：打开"此电脑"</p>
+                <ul>
+                    <li>在桌面上找到"此电脑"图标（或"我的电脑"）</li>
+                    <li>如果桌面上没有，按<strong>Windows键</strong>，输入"此电脑"</li>
+                </ul>
+
+                <p><strong>第2步</strong>：打开系统属性</p>
+                <ol>
+                    <li><strong>右键</strong>点击"此电脑"图标</li>
+                    <li>在弹出菜单中选择"<strong>属性</strong>"</li>
+                    <li>会打开一个窗口，显示你的电脑信息</li>
+                </ol>
+
+                <p><strong>第3步</strong>：进入高级系统设置</p>
+                <div class="warning-box">
+                    <h4>⚠️ 这一步根据Windows版本不同，可能有两种情况</h4>
+
+                    <p><strong>情况A</strong>（Windows 11或新版Win10）：</p>
+                    <ol>
+                        <li>在打开的窗口右侧，找到"<strong>高级系统设置</strong>"链接</li>
+                        <li>点击它</li>
+                    </ol>
+
+                    <p><strong>情况B</strong>（老版Windows 10）：</p>
+                    <ol>
+                        <li>在左侧菜单，找到"<strong>高级系统设置</strong>"</li>
+                        <li>点击它</li>
+                    </ol>
+                </div>
+
+                <p><strong>第4步</strong>：打开环境变量</p>
+                <ol>
+                    <li>会弹出"系统属性"窗口</li>
+                    <li>确认顶部标签页选中的是"<strong>高级</strong>"</li>
+                    <li>在窗口底部，找到"<strong>环境变量(N)...</strong>"按钮</li>
+                    <li>点击这个按钮</li>
+                </ol>
+
+                <p><strong>第5步</strong>：编辑Path变量</p>
+                <ol>
+                    <li>会弹出"环境变量"窗口，分为上下两部分</li>
+                    <li>看<strong>下面</strong>那部分，标题是"<strong>系统变量(S)</strong>"</li>
+                    <li>在列表中找到变量名为"<strong>Path</strong>"的那一行（可能需要滚动查找）</li>
+                    <li><strong>单击</strong>选中"Path"这一行（变成蓝色高亮）</li>
+                    <li>点击下方的"<strong>编辑(I)...</strong>"按钮</li>
+                </ol>
+
+                <p><strong>第6步</strong>：添加新路径</p>
+                <ol>
+                    <li>会弹出"编辑环境变量"窗口</li>
+                    <li>点击右侧的"<strong>新建(N)</strong>"按钮</li>
+                    <li>会出现一个新的空行，光标在闪烁</li>
+                    <li>在这个空行中输入（注意大小写和斜杠方向）：</li>
+                </ol>
+                <pre><code>C:\android-sdk\platform-tools</code></pre>
+
+                <div class="danger-box">
+                    <h4>⚠️ 输入注意事项</h4>
+                    <ul>
+                        <li>必须是<strong>反斜杠 \</strong>，不是正斜杠 /</li>
+                        <li>路径必须和你实际解压的位置<strong>完全一致</strong></li>
+                        <li>如果你解压到了其他位置（比如D盘），路径就要相应改变</li>
+                        <li><strong>不要</strong>在路径末尾加<code>\adb.exe</code>，只到<code>platform-tools</code>文件夹即可</li>
+                    </ul>
+                </div>
+
+                <p><strong>第7步</strong>：保存设置</p>
+                <ol>
+                    <li>点击"编辑环境变量"窗口的"<strong>确定</strong>"按钮</li>
+                    <li>点击"环境变量"窗口的"<strong>确定</strong>"按钮</li>
+                    <li>点击"系统属性"窗口的"<strong>确定</strong>"按钮</li>
+                    <li><strong>重要</strong>：如果有CMD窗口打开着，必须<strong>关闭后重新打开</strong>才能生效</li>
                 </ol>
             </div>
 
             <div class="step">
-                <h3>验证安装</h3>
+                <h3>3.4 验证安装是否成功</h3>
+
+                <p><strong>第1步</strong>：打开新的CMD窗口</p>
+                <ul>
+                    <li>按<strong>Windows键</strong></li>
+                    <li>输入<code>cmd</code></li>
+                    <li>点击"命令提示符"</li>
+                    <li><strong>注意</strong>：必须是新打开的CMD，旧的不生效</li>
+                </ul>
+
+                <p><strong>第2步</strong>：输入验证命令</p>
                 <pre><code>adb version</code></pre>
-                <p>应显示ADB版本信息</p>
+                <p>（注意<code>adb</code>和<code>version</code>之间有一个空格，然后按回车）</p>
+
+                <div class="success-box">
+                    <h4>✅ 成功的情况</h4>
+                    <p>如果显示类似这样的信息：</p>
+                    <pre><code>Android Debug Bridge version 1.0.41
+Version 34.0.4-10411341
+Installed as C:\android-sdk\platform-tools\adb.exe</code></pre>
+                    <p>（版本号可能不同，只要有"Android Debug Bridge version"就成功了）</p>
+                    <p><strong>恭喜！Android SDK安装并配置成功！</strong></p>
+                </div>
+
+                <div class="danger-box">
+                    <h4>❌ 如果出现错误</h4>
+                    <p>显示：</p>
+                    <pre><code>'adb' 不是内部或外部命令</code></pre>
+
+                    <h4>🔧 解决方法</h4>
+                    <ol>
+                        <li><strong>检查路径</strong>：确认<code>C:\android-sdk\platform-tools\adb.exe</code>文件存在</li>
+                        <li><strong>检查环境变量</strong>：重新打开环境变量设置，确认Path中有<code>C:\android-sdk\platform-tools</code></li>
+                        <li><strong>重启电脑</strong>：有时候环境变量需要重启才能生效</li>
+                        <li><strong>重新打开CMD</strong>：必须用新的CMD窗口，旧的不会更新</li>
+                    </ol>
+                </div>
             </div>
 
             <h3>第4步：安装Appium</h3>
+
+            <div class="warning-box">
+                <h4>⏱️ 预计耗时：5-10分钟</h4>
+                <h4>📌 什么是Appium？</h4>
+                <p>Appium是一个自动化测试工具，专门用来控制手机APP的。</p>
+
+                <h5>💡 用生活场景打比方：</h5>
+                <ul>
+                    <li>你的手机 = 一辆汽车</li>
+                    <li>Appium = 自动驾驶系统（代替你操作汽车）</li>
+                    <li>我们的程序 = 设定好的导航路线（告诉自动驾驶去哪里）</li>
+                </ul>
+                <p><strong>简单说</strong>：Appium是核心工具，让电脑可以像人一样操作手机。</p>
+            </div>
+
             <div class="step">
-                <h3>全局安装Appium</h3>
+                <h3>4.1 安装Appium主程序</h3>
+
+                <div class="warning-box">
+                    <h4>⚠️ 前提条件检查</h4>
+                    <p>开始之前，确保你已经完成了：</p>
+                    <ul>
+                        <li>✅ 第1步：Python已安装并验证成功</li>
+                        <li>✅ 第2步：Node.js已安装并验证成功（npm命令能用）</li>
+                        <li>✅ 第3步：Android SDK已安装并验证成功</li>
+                    </ul>
+                    <p>如果有任何一项没完成，请先回去完成！</p>
+                </div>
+
+                <h4>📝 安装步骤</h4>
+
+                <p><strong>第1步</strong>：打开CMD命令提示符</p>
+                <ul>
+                    <li>按<strong>Windows键</strong></li>
+                    <li>输入<code>cmd</code></li>
+                    <li>点击"命令提示符"</li>
+                </ul>
+
+                <p><strong>第2步</strong>：输入安装命令</p>
+                <p>在CMD中输入以下命令（一字不差地输入）：</p>
                 <pre><code>npm install -g appium</code></pre>
-                <p>等待安装完成（约2-5分钟）</p>
+
+                <div class="warning-box">
+                    <h4>📖 命令解释</h4>
+                    <ul>
+                        <li><code>npm</code> = Node.js的包管理工具（类似应用商店）</li>
+                        <li><code>install</code> = 安装</li>
+                        <li><code>-g</code> = global（全局安装，意思是安装到整个电脑，不是某个文件夹）</li>
+                        <li><code>appium</code> = 要安装的软件名称</li>
+                    </ul>
+                </div>
+
+                <p><strong>第3步</strong>：按回车键，开始安装</p>
+
+                <p><strong>第4步</strong>：等待安装完成</p>
+                <div class="success-box">
+                    <h4>✅ 安装过程中你会看到：</h4>
+                    <ul>
+                        <li>大量文字快速滚动（这是正常的！）</li>
+                        <li>可能会显示一些"WARN"（警告）信息（忽略它们，不影响使用）</li>
+                        <li>安装时间约<strong>2-5分钟</strong>（取决于网速）</li>
+                        <li>最后会显示"added XXX packages"（添加了XXX个包）</li>
+                    </ul>
+                </div>
+
+                <div class="danger-box">
+                    <h4>❌ 如果安装失败</h4>
+
+                    <p><strong>常见错误1</strong>：网络超时</p>
+                    <pre><code>npm ERR! network timeout</code></pre>
+                    <p><strong>解决</strong>：网络问题，多试几次，或使用国内镜像：</p>
+                    <pre><code>npm config set registry https://registry.npmmirror.com
+npm install -g appium</code></pre>
+
+                    <p><strong>常见错误2</strong>：权限不足</p>
+                    <pre><code>npm ERR! code EACCES</code></pre>
+                    <p><strong>解决</strong>：以管理员身份运行CMD</p>
+                    <ol>
+                        <li>按Windows键，输入<code>cmd</code></li>
+                        <li><strong>右键</strong>"命令提示符"</li>
+                        <li>选择"以管理员身份运行"</li>
+                        <li>重新输入安装命令</li>
+                    </ol>
+                </div>
+
+                <p><strong>第5步</strong>：验证Appium是否安装成功</p>
+                <p>在CMD中输入：</p>
+                <pre><code>appium --version</code></pre>
+                <p>（注意是两个减号<code>--</code>）</p>
+
+                <div class="success-box">
+                    <h4>✅ 成功的情况</h4>
+                    <p>如果显示：</p>
+                    <pre><code>2.5.1</code></pre>
+                    <p>（数字可能不同，只要显示版本号就成功了）</p>
+                    <p><strong>恭喜！Appium主程序安装成功！</strong></p>
+                </div>
             </div>
 
             <div class="step">
-                <h3>安装UiAutomator2驱动</h3>
+                <h3>4.2 安装UiAutomator2驱动</h3>
+
+                <div class="warning-box">
+                    <h4>❓ 什么是UiAutomator2驱动？</h4>
+                    <p>Appium只是一个框架（车身），要控制Android手机，还需要专门的驱动（引擎）。</p>
+                    <p>UiAutomator2就是Android手机专用的驱动。</p>
+
+                    <h5>💡 打个比方：</h5>
+                    <ul>
+                        <li>Appium = 汽车的车身</li>
+                        <li>UiAutomator2驱动 = 汽车的引擎</li>
+                        <li>只有车身没有引擎，车跑不了</li>
+                    </ul>
+                </div>
+
+                <h4>📝 安装步骤</h4>
+
+                <p><strong>第1步</strong>：确保CMD窗口还开着（或重新打开一个）</p>
+
+                <p><strong>第2步</strong>：输入安装命令</p>
                 <pre><code>appium driver install uiautomator2</code></pre>
+
+                <div class="warning-box">
+                    <h4>📖 命令解释</h4>
+                    <ul>
+                        <li><code>appium</code> = 刚才安装的Appium程序</li>
+                        <li><code>driver</code> = 驱动</li>
+                        <li><code>install</code> = 安装</li>
+                        <li><code>uiautomator2</code> = 驱动的名称</li>
+                    </ul>
+                </div>
+
+                <p><strong>第3步</strong>：按回车键，开始安装</p>
+
+                <p><strong>第4步</strong>：等待安装完成</p>
+                <div class="success-box">
+                    <h4>✅ 安装过程中你会看到：</h4>
+                    <ul>
+                        <li>下载进度（Downloading...）</li>
+                        <li>安装时间约<strong>1-3分钟</strong></li>
+                        <li>最后显示"Driver uiautomator2@X.X.X successfully installed"</li>
+                    </ul>
+                </div>
+
+                <div class="danger-box">
+                    <h4>❌ 如果安装失败</h4>
+                    <p>通常是网络问题，解决方法：</p>
+                    <ol>
+                        <li>检查网络连接</li>
+                        <li>多试几次</li>
+                        <li>使用国内镜像：</li>
+                    </ol>
+                    <pre><code>npm config set registry https://registry.npmmirror.com
+appium driver install uiautomator2</code></pre>
+                </div>
             </div>
 
             <div class="step">
-                <h3>验证安装</h3>
-                <pre><code>appium --version
-appium driver list</code></pre>
-                <p>应显示UiAutomator2驱动已安装</p>
+                <h3>4.3 验证Appium完整安装</h3>
+
+                <p><strong>第1步</strong>：检查Appium版本</p>
+                <pre><code>appium --version</code></pre>
+                <p>应该显示版本号，比如<code>2.5.1</code></p>
+
+                <p><strong>第2步</strong>：检查已安装的驱动列表</p>
+                <pre><code>appium driver list</code></pre>
+
+                <div class="success-box">
+                    <h4>✅ 成功的情况</h4>
+                    <p>应该显示类似这样的信息：</p>
+                    <pre><code>✔ Listing available drivers
+- uiautomator2@2.34.2 [installed (npm)]</code></pre>
+                    <p>关键是看到<code>uiautomator2</code>后面有<strong>[installed]</strong>（已安装）</p>
+                    <p><strong>太棒了！Appium和驱动都安装成功了！</strong></p>
+                </div>
+
+                <div class="danger-box">
+                    <h4>❌ 如果没看到[installed]</h4>
+                    <p>说明驱动没安装成功，需要重新安装：</p>
+                    <pre><code>appium driver install uiautomator2</code></pre>
+                </div>
+
+                <h4>🎉 恭喜！所有环境都安装完成了！</h4>
+                <div class="success-box">
+                    <p>到这一步，你已经完成了：</p>
+                    <ul>
+                        <li>✅ Python 3.11 安装并验证</li>
+                        <li>✅ Node.js 20.x 安装并验证</li>
+                        <li>✅ Android SDK（ADB工具）安装并验证</li>
+                        <li>✅ Appium主程序安装</li>
+                        <li>✅ UiAutomator2驱动安装</li>
+                    </ul>
+                    <p><strong>现在可以继续下一步：配置项目了！</strong></p>
+                </div>
             </div>
 
             <h3>第5步：下载和配置项目</h3>
