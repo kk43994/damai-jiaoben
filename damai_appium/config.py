@@ -10,7 +10,7 @@ import os
 
 
 class Config:
-    def __init__(self, server_url, keyword, users, city, date, price, price_index, if_commit_order):
+    def __init__(self, server_url, keyword, users, city, date, price, price_index, if_commit_order, adb_port=None):
         self.server_url = server_url
         self.keyword = keyword
         self.users = users
@@ -19,6 +19,7 @@ class Config:
         self.price = price
         self.price_index = price_index
         self.if_commit_order = if_commit_order
+        self.adb_port = adb_port or "62001"  # 默认端口
 
     @staticmethod
     def load_config():
@@ -47,4 +48,5 @@ class Config:
                       config['date'],
                       config['price'],
                       config['price_index'],
-                      config['if_commit_order'])
+                      config['if_commit_order'],
+                      config.get('adb_port', '62001'))  # 兼容旧配置文件

@@ -500,6 +500,12 @@ class EnvironmentFixer:
         try:
             cmd = f'appium --address 127.0.0.1 --port {port} --allow-cors'
 
+            # 确保Android SDK环境变量被传递
+            env = os.environ.copy()
+            android_sdk_path = str(Path.home() / "AppData" / "Local" / "Android" / "Sdk")
+            env['ANDROID_HOME'] = android_sdk_path
+            env['ANDROID_SDK_ROOT'] = android_sdk_path
+
             if background:
                 # 后台启动
                 if sys.platform == 'win32':
@@ -508,14 +514,16 @@ class EnvironmentFixer:
                         shell=True,
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
-                        creationflags=subprocess.CREATE_NO_WINDOW
+                        creationflags=subprocess.CREATE_NO_WINDOW,
+                        env=env
                     )
                 else:
                     subprocess.Popen(
                         cmd,
                         shell=True,
                         stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL
+                        stderr=subprocess.DEVNULL,
+                        env=env
                     )
 
                 # 等待服务启动
@@ -539,6 +547,192 @@ class EnvironmentFixer:
             return False, 'appium命令未找到，请先安装Appium: npm install -g appium'
         except Exception as e:
             return False, f'启动Appium失败: {str(e)}'
+
+    def sync_config_files(self, adb_port: str) -> Tuple[bool, str]:
+        """同步所有配置文件的ADB端口
+
+        Args:
+            adb_port: ADB端口号(只包含数字,如"50932")
+
+        Returns:
+            (成功标志, 消息)
+        """
+        try:
+            project_root = Path(__file__).parent
+            config_jsonc = project_root / "damai_appium" / "config.jsonc"
+            last_config = project_root / "last_config.json"
+
+            updated_files = []
+
+            # 1. 更新 config.jsonc
+            if config_jsonc.exists():
+                try:
+                    with open(config_jsonc, 'r', encoding='utf-8') as f:
+                        config = json.load(f)
+
+                    old_port = config.get('adb_port')
+                    config['adb_port'] = adb_port
+
+                    with open(config_jsonc, 'w', encoding='utf-8') as f:
+                        json.dump(config, f, indent=2, ensure_ascii=False)
+
+                    updated_files.append(f"config.jsonc ({old_port} → {adb_port})")
+                except Exception as e:
+                    return False, f"更新config.jsonc失败: {e}"
+
+            # 2. 更新 last_config.json
+            try:
+                if last_config.exists():
+                    with open(last_config, 'r', encoding='utf-8') as f:
+                        last_cfg = json.load(f)
+                else:
+                    last_cfg = {}
+
+                old_port = last_cfg.get('adb_port')
+                last_cfg['adb_port'] = adb_port
+
+                with open(last_config, 'w', encoding='utf-8') as f:
+                    json.dump(last_cfg, f, indent=2, ensure_ascii=False)
+
+                updated_files.append(f"last_config.json ({old_port} → {adb_port})")
+            except Exception as e:
+                return False, f"更新last_config.json失败: {e}"
+
+            return True, f"已同步配置文件: {', '.join(updated_files)}"
+
+        except Exception as e:
+            return False, f"配置同步失败: {e}"
+
+    def test_webdriver_connection(self, adb_port: str, server_url: str = "http://127.0.0.1:4723") -> Tuple[bool, str]:
+        """测试WebDriver连接
+
+        Args:
+            adb_port: ADB端口号(只包含数字,如"50932")
+            server_url: Appium服务器地址
+
+        Returns:
+            (成功标志, 详细信息)
+        """
+        try:
+            # 动态导入以避免循环依赖
+            from appium import webdriver
+            from appium.options.android import UiAutomator2Options
+
+            options = UiAutomator2Options()
+            options.platform_name = "Android"
+            options.udid = f"127.0.0.1:{adb_port}"
+            options.app_package = "cn.damai"
+            options.app_activity = "cn.damai.main.ui.MainActivity"
+            options.no_reset = True
+            options.new_command_timeout = 300
+            options.skip_server_installation = False  # 允许自动安装UiAutomator2
+
+            # 尝试连接
+            driver = webdriver.Remote(server_url, options=options)
+
+            # 测试基本操作
+            package = driver.current_package
+            activity = driver.current_activity
+
+            # 关闭连接
+            driver.quit()
+
+            return True, f"WebDriver连接成功\n设备: 127.0.0.1:{adb_port}\n当前应用: {package}\n当前Activity: {activity}"
+
+        except Exception as e:
+            error_msg = str(e)
+
+            # 提供更详细的错误诊断
+            if "instrumentation" in error_msg.lower():
+                return False, f"WebDriver连接失败: UiAutomator2服务初始化失败\n建议:\n1. 重启大麦App\n2. 重启模拟器\n3. 清除UiAutomator2缓存: adb uninstall io.appium.uiautomator2.server\n\n详细错误: {error_msg[:300]}"
+            elif "session" in error_msg.lower() and "not created" in error_msg.lower():
+                return False, f"WebDriver连接失败: 无法创建会话\n建议:\n1. 检查Appium服务是否正常运行\n2. 检查设备连接: adb devices\n3. 检查大麦App是否已安装\n\n详细错误: {error_msg[:300]}"
+            elif "connect" in error_msg.lower() or "connection" in error_msg.lower():
+                return False, f"WebDriver连接失败: 无法连接到服务器\n建议:\n1. 检查Appium服务: {server_url}/status\n2. 启动Appium: appium --address 127.0.0.1 --port 4723 --allow-cors\n\n详细错误: {error_msg[:300]}"
+            else:
+                return False, f"WebDriver连接失败: {error_msg[:500]}"
+
+    def auto_fix_webdriver(self) -> Tuple[bool, str, Dict]:
+        """自动修复WebDriver连接问题
+
+        完整的修复流程:
+        1. 检测ADB设备
+        2. 同步配置文件
+        3. 检查Appium服务
+        4. 测试WebDriver连接
+
+        Returns:
+            (成功标志, 消息, 详细结果字典)
+        """
+        results = {
+            'adb_devices': None,
+            'config_sync': None,
+            'appium_service': None,
+            'webdriver_test': None,
+            'selected_port': None
+        }
+
+        # 步骤1: 检测ADB设备
+        try:
+            result = subprocess.run(
+                f'"{self.adb_path}" devices',
+                capture_output=True,
+                text=True,
+                shell=True,
+                timeout=10
+            )
+
+            # 解析设备列表
+            devices = []
+            for line in result.stdout.strip().split('\n')[1:]:
+                if line.strip() and '\t' in line:
+                    device_id = line.split('\t', 1)[0].strip()
+                    if '127.0.0.1:' in device_id:
+                        port = device_id.split(':')[1]
+                        devices.append(port)
+
+            if not devices:
+                results['adb_devices'] = "未检测到设备"
+                return False, "未检测到ADB设备,请先连接模拟器/云手机", results
+
+            # 使用第一个设备
+            adb_port = devices[0]
+            results['adb_devices'] = f"检测到 {len(devices)} 个设备"
+            results['selected_port'] = adb_port
+
+        except Exception as e:
+            results['adb_devices'] = f"检测失败: {e}"
+            return False, f"ADB设备检测失败: {e}", results
+
+        # 步骤2: 同步配置文件
+        success, msg = self.sync_config_files(adb_port)
+        results['config_sync'] = msg
+        if not success:
+            return False, msg, results
+
+        # 步骤3: 检查Appium服务
+        try:
+            response = requests.get('http://127.0.0.1:4723/status', timeout=3)
+            if response.status_code == 200:
+                results['appium_service'] = "运行正常"
+            else:
+                results['appium_service'] = f"响应异常: {response.status_code}"
+                return False, "Appium服务响应异常", results
+        except:
+            # 尝试启动Appium
+            success, msg = self.start_appium()
+            results['appium_service'] = msg
+            if not success:
+                return False, f"Appium服务未运行且启动失败: {msg}", results
+
+        # 步骤4: 测试WebDriver连接
+        success, msg = self.test_webdriver_connection(adb_port)
+        results['webdriver_test'] = msg
+
+        if success:
+            return True, f"WebDriver自动修复成功! 端口: {adb_port}", results
+        else:
+            return False, f"WebDriver连接测试失败:\n{msg}", results
 
 
 def get_environment_status() -> Dict:

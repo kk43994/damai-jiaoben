@@ -117,34 +117,50 @@ class DamaiBot:
         BotLogger.info("初始化Appium WebDriver...")
         BotLogger.info(f"服务器地址: {self.config.server_url}")
 
+        # 构造UDID(从adb_port)
+        udid = f"127.0.0.1:{self.config.adb_port}"
+        BotLogger.info(f"目标设备UDID: {udid}")
+
         capabilities = {
             "platformName": "Android",  # 操作系统
+            # 指定UDID确保连接到正确的设备
+            "udid": udid,
             # 不指定 platformVersion 和 deviceName，让 Appium 自动检测
             "appPackage": "cn.damai",  # app 包名
             "appActivity": ".launcher.splash.SplashMainActivity",  # app 启动 Activity
             "unicodeKeyboard": False,  # 禁用 Unicode 输入（避免需要 Appium Settings）
             "resetKeyboard": False,  # 不重置键盘
             "noReset": True,  # 不重置 app
-            "newCommandTimeout": 6000,  # 超时时间
+            "newCommandTimeout": 300,  # 超时时间(5分钟,优化from 6000)
             "automationName": "UiAutomator2",  # 使用 uiautomator2
 
-            # === 反检测配置 ===
-            "skipServerInstallation": False,  # 需要安装 UiAutomator2 服务器
-            "skipDeviceInitialization": False,  # 需要初始化设备
+            # === 连接配置(针对红手指云设备优化) ===
+            "skipServerInstallation": True,  # 跳过UiAutomator2服务器重新安装(已安装则复用,加快连接)
+            "skipDeviceInitialization": True,  # 跳过设备初始化(避免ADB命令超时)
+            "skipUnlock": True,  # 跳过解锁检查(节省时间)
             "ignoreHiddenApiPolicyError": True,  # 忽略隐藏 API 策略错误
             "disableWindowAnimation": True,  # 禁用窗口动画
 
             # 隐藏自动化特征
-            "skipLogcatCapture": True,  # 不捕获logcat日志
+            "skipLogcatCapture": True,  # 不捕获logcat日志(减少性能开销)
             "disableSuppressAccessibilityService": True,  # 不禁用辅助功能服务
 
-            # 性能优化配置
+            # 性能优化配置(针对红手指云设备,已skip初始化,超时可缩短)
             "mjpegServerFramerate": 1,  # 降低截图帧率
             "shouldTerminateApp": False,
-            "adbExecTimeout": 60000,  # 增加ADB执行超时到60秒
-            "androidInstallTimeout": 120000,  # 延长安装超时时间到120秒
+            "adbExecTimeout": 60000,  # ADB执行超时60秒(已skip初始化,缩短from 180秒)
+            "androidInstallTimeout": 90000,  # 安装超时90秒(缩短from 300秒)
+            "uiautomator2ServerLaunchTimeout": 30000,  # UiAutomator2启动超时30秒(已skip安装,缩短from 240秒)
+            "uiautomator2ServerInstallTimeout": 300000,  # UiAutomator2安装超时300秒(5分钟,保留)
+            "uiautomator2ServerReadTimeout": 60000,  # 服务器读取超时60秒(缩短from 180秒)
 
-            # 使用更隐蔽的设置
+            # === Settings预设置(提前应用性能优化) ===
+            "settings[waitForIdleTimeout]": 0,  # 最关键!立即执行操作
+            "settings[ignoreUnimportantViews]": True,  # 压缩布局
+            "settings[allowInvisibleElements]": False,  # 不包含不可见元素
+            "settings[enableNotificationListener]": False,  # 禁用通知监听
+            "settings[actionAcknowledgmentTimeout]": 500,  # 动作确认超时
+            "settings[scrollAcknowledgmentTimeout]": 200,  # 滚动确认超时
             "settings[disableIdLocatorAutocompletion]": True,  # 禁用ID定位器自动完成
         }
 
@@ -153,27 +169,96 @@ class DamaiBot:
 
         try:
             BotLogger.info("正在连接到设备...")
+            BotLogger.debug(f"  - Appium地址: {self.config.server_url}")
+            BotLogger.debug(f"  - 设备UDID: {udid}")
+            BotLogger.debug(f"  - ADB端口: {self.config.adb_port}")
+            BotLogger.debug(f"  - 应用包名: {capabilities.get('appPackage')}")
+            BotLogger.debug(f"  - 跳过服务器安装: {capabilities.get('skipServerInstallation')}")
+            BotLogger.debug(f"  - 跳过设备初始化: {capabilities.get('skipDeviceInitialization')}")
+
+            # 记录连接开始时间
+            import time
+            connect_start = time.time()
+            BotLogger.info("  [1/3] 正在建立WebDriver连接...")
+
             self.driver = webdriver.Remote(self.config.server_url, options=device_app_info)
-            BotLogger.success("成功连接到设备!")
+
+            connect_time = time.time() - connect_start
+            BotLogger.success(f"  [1/3] WebDriver连接成功! (耗时: {connect_time:.2f}秒)")
+
+            if connect_time > 30:
+                BotLogger.warning(f"  ! 连接耗时较长({connect_time:.2f}秒)，可能是首次连接或网络问题")
+
         except Exception as e:
+            error_msg = str(e)
             BotLogger.error("连接设备失败", e)
+            BotLogger.error(f"  - 错误详情: {error_msg}")
+            BotLogger.error(f"  - 服务器地址: {self.config.server_url}")
+
+            # 检测是否是UiAutomator2服务器问题
+            if "instrumentation process cannot be initialized" in error_msg:
+                BotLogger.warning("检测到UiAutomator2服务器初始化失败")
+                BotLogger.info("尝试清理并重启UiAutomator2服务器...")
+
+                try:
+                    # 清理UiAutomator2服务器进程
+                    import subprocess
+                    device_udid = f"127.0.0.1:{self.config.adb_port}"
+
+                    BotLogger.info(f"  - 停止UiAutomator2服务器进程 (设备: {device_udid})")
+                    subprocess.run(
+                        f'adb -s {device_udid} shell "am force-stop io.appium.uiautomator2.server"',
+                        shell=True,
+                        timeout=10,
+                        capture_output=True
+                    )
+
+                    BotLogger.info(f"  - 停止UiAutomator2测试进程")
+                    subprocess.run(
+                        f'adb -s {device_udid} shell "am force-stop io.appium.uiautomator2.server.test"',
+                        shell=True,
+                        timeout=10,
+                        capture_output=True
+                    )
+
+                    import time
+                    time.sleep(2)
+                    BotLogger.success("UiAutomator2服务器已清理，请重新点击连接按钮")
+
+                except Exception as cleanup_error:
+                    BotLogger.warning(f"清理失败: {cleanup_error}")
+
             raise
 
         # 更激进的性能优化设置
-        BotLogger.info("配置性能优化参数...")
+        BotLogger.info("  [2/3] 配置性能优化参数...")
+        settings_start = time.time()
+
         self.driver.update_settings({
-            "waitForIdleTimeout": 0,  # 空闲时间，0 表示不等待，让 UIAutomator2 不等页面“空闲”再返回
-            "actionAcknowledgmentTimeout": 0,  # 禁止等待动作确认
-            "keyInjectionDelay": 0,  # 禁止输入延迟
-            "waitForSelectorTimeout": 300,  # 从500减少到300ms
-            "ignoreUnimportantViews": False,  # 保持false避免元素丢失
-            "allowInvisibleElements": True,
+            "waitForIdleTimeout": 0,  # 最关键!0=不等待UI idle,立即执行操作
+            "actionAcknowledgmentTimeout": 500,  # 动作确认超时500ms(比0更稳定)
+            "scrollAcknowledgmentTimeout": 200,  # 滚动确认超时200ms
+            "keyInjectionDelay": 0,  # 输入延迟0ms
+            "waitForSelectorTimeout": 300,  # 选择器超时300ms
+            "ignoreUnimportantViews": True,  # 压缩布局层次,提升性能
+            "allowInvisibleElements": False,  # 不包含不可见元素
             "enableNotificationListener": False,  # 禁用通知监听
         })
 
+        settings_time = time.time() - settings_start
+        BotLogger.success(f"  [2/3] 性能优化配置完成! (耗时: {settings_time:.2f}秒)")
+
         # 极短的显式等待，抢票场景下速度优先
+        BotLogger.info("  [3/3] 初始化WebDriverWait...")
+        wait_start = time.time()
+
         self.wait = WebDriverWait(self.driver, 2)  # 从5秒减少到2秒
-        BotLogger.success("WebDriver初始化完成!")
+
+        wait_time = time.time() - wait_start
+        BotLogger.success(f"  [3/3] WebDriverWait初始化完成! (耗时: {wait_time:.2f}秒)")
+
+        total_time = connect_time + settings_time + wait_time
+        BotLogger.success(f"WebDriver初始化完成! (总耗时: {total_time:.2f}秒)")
 
     def press_back(self):
         """按返回键"""
