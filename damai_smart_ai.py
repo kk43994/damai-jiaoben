@@ -536,7 +536,7 @@ class SmartAI:
 class SmartAIGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("大麦抢票智能AI v2.0 - OCR识别")
+        self.root.title("自动化抢购技术学习脚本 v2.1 (集成OCR与自动决策) - 仅供教学研究")
         # 窗口大小：Canvas 450x800(62.5%缩放) + 右侧控制区400 = 总宽870
         self.root.geometry("870x900")
 
@@ -592,16 +592,73 @@ class SmartAIGUI:
         """创建界面"""
 
         # 顶部标题
-        title_frame = tk.Frame(self.root, bg="#1890ff", height=50)
+        title_frame = tk.Frame(self.root, bg="#1890ff", height=60)
         title_frame.pack(fill=tk.X)
         title_label = tk.Label(
             title_frame,
-            text="大麦抢票智能AI - OCR文字识别 + 自动决策",
-            font=("微软雅黑", 14, "bold"),
+            text="针对自动化抢购集成OCR技术和自动决策技术的学习脚本（供教学用）",
+            font=("微软雅黑", 13, "bold"),
             bg="#1890ff",
             fg="white"
         )
-        title_label.pack(pady=12)
+        title_label.pack(pady=8)
+
+        # 版本号（小字）
+        version_label = tk.Label(
+            title_frame,
+            text="v2.1.0 | 开源学习项目",
+            font=("微软雅黑", 9),
+            bg="#1890ff",
+            fg="#e6f7ff"
+        )
+        version_label.pack(pady=(0, 8))
+
+        # ⚠️ 法律免责声明框（红色警告框）
+        disclaimer_frame = tk.Frame(self.root, bg="#dc3545", relief=tk.RIDGE, borderwidth=3)
+        disclaimer_frame.pack(fill=tk.X, padx=10, pady=(5, 0))
+
+        # 警告图标和主标题
+        warning_title = tk.Label(
+            disclaimer_frame,
+            text="⚠️  法律声明与使用须知  ⚠️",
+            font=("微软雅黑", 11, "bold"),
+            bg="#dc3545",
+            fg="white"
+        )
+        warning_title.pack(pady=(8, 5))
+
+        # 免责声明内容（白色背景）
+        disclaimer_content = tk.Frame(disclaimer_frame, bg="#fff3cd", relief=tk.SUNKEN, borderwidth=1)
+        disclaimer_content.pack(fill=tk.X, padx=8, pady=(0, 8))
+
+        disclaimer_text = (
+            "• 本脚本仅供技术交流学习使用，严禁用于任何违法犯罪活动\n"
+            "• 禁止商业倒卖门票、禁止恶意抢票、禁止破坏平台公平秩序\n"
+            "• 禁止通过学习本脚本进行任何违反法律法规的行为\n"
+            "• 本项目已开源于GitHub平台，完全免费，仅作教学研究用途\n"
+            "• 使用者的一切违法违规行为由使用者本人承担，与开发者无关"
+        )
+
+        disclaimer_label = tk.Label(
+            disclaimer_content,
+            text=disclaimer_text,
+            font=("微软雅黑", 8),
+            bg="#fff3cd",
+            fg="#856404",
+            justify=tk.LEFT,
+            anchor="w"
+        )
+        disclaimer_label.pack(padx=10, pady=8, fill=tk.X)
+
+        # 底部强调（红色小字）
+        disclaimer_footer = tk.Label(
+            disclaimer_frame,
+            text="⚠️ 违法使用后果自负 | 开发者不承担任何法律责任 ⚠️",
+            font=("微软雅黑", 8, "bold"),
+            bg="#dc3545",
+            fg="yellow"
+        )
+        disclaimer_footer.pack(pady=(0, 6))
 
         # 主内容区
         main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
