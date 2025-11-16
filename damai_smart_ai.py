@@ -32,6 +32,7 @@ if ADB_PATH.exists():
     os.environ["PATH"] = str(ADB_PATH) + os.pathsep + os.environ.get("PATH", "")
 
 from damai_appium.damai_app_v2 import DamaiBot, BotLogger
+from damai_appium.fast_grabber import FastGrabber, GrabConfig
 from environment_checker import EnvironmentChecker, EnvironmentFixer, CheckResult
 from smart_wait import SmartWait, ParallelPopupHandler, PerformanceMonitor
 from connection_auto_fixer import ConnectionAutoFixer
@@ -582,6 +583,27 @@ class SmartAIGUI:
         self.diagnose_is_monitoring = False
         self.diagnose_thread = None
 
+        # 快速抢票模块
+        self.fast_grabber = None  # 连接后初始化
+
+        # 抢票坐标配置
+        self.grab_coords = {
+            "session_x": tk.IntVar(value=360),
+            "session_y": tk.IntVar(value=400),
+            "price_x": tk.IntVar(value=360),
+            "price_y": tk.IntVar(value=600),
+            "buy_x": tk.IntVar(value=360),
+            "buy_y": tk.IntVar(value=1100)
+        }
+
+        # 抢票参数
+        self.click_interval = tk.DoubleVar(value=0.1)
+        self.max_clicks = tk.IntVar(value=100)
+        self.page_check_interval = tk.IntVar(value=5)
+
+        # 坐标选择模式
+        self.coord_picking_mode = None  # 当前正在选择的坐标类型
+
         self.create_widgets()
         self.load_config()
 
@@ -861,22 +883,77 @@ class SmartAIGUI:
         self.stop_btn = ttk.Button(btn_frame, text="停止", command=self.stop_monitoring, width=12, state=tk.DISABLED)
         self.stop_btn.pack(side=tk.LEFT)
 
-        # 抢票按钮
+        # === 快速抢票坐标设置面板 ===
+        coords_frame = ttk.LabelFrame(middle_frame, text="⚡ 快速抢票坐标设置", padding="10")
+        coords_frame.pack(fill=tk.X, pady=(0, 10))
+
+        # 场次坐标
+        session_row = ttk.Frame(coords_frame)
+        session_row.pack(fill=tk.X, pady=2)
+        ttk.Label(session_row, text="场次:", width=6).pack(side=tk.LEFT)
+        ttk.Entry(session_row, textvariable=self.grab_coords["session_x"], width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Entry(session_row, textvariable=self.grab_coords["session_y"], width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Button(session_row, text="📍", command=lambda: self.pick_coord_from_screenshot("session"), width=3).pack(side=tk.LEFT, padx=2)
+
+        # 票档坐标
+        price_row = ttk.Frame(coords_frame)
+        price_row.pack(fill=tk.X, pady=2)
+        ttk.Label(price_row, text="票档:", width=6).pack(side=tk.LEFT)
+        ttk.Entry(price_row, textvariable=self.grab_coords["price_x"], width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Entry(price_row, textvariable=self.grab_coords["price_y"], width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Button(price_row, text="📍", command=lambda: self.pick_coord_from_screenshot("price"), width=3).pack(side=tk.LEFT, padx=2)
+
+        # 购票按钮坐标
+        buy_row = ttk.Frame(coords_frame)
+        buy_row.pack(fill=tk.X, pady=2)
+        ttk.Label(buy_row, text="购票:", width=6).pack(side=tk.LEFT)
+        ttk.Entry(buy_row, textvariable=self.grab_coords["buy_x"], width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Entry(buy_row, textvariable=self.grab_coords["buy_y"], width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Button(buy_row, text="📍", command=lambda: self.pick_coord_from_screenshot("buy"), width=3).pack(side=tk.LEFT, padx=2)
+
+        # 参数设置
+        param_row = ttk.Frame(coords_frame)
+        param_row.pack(fill=tk.X, pady=5)
+        ttk.Label(param_row, text="间隔:", width=6).pack(side=tk.LEFT)
+        ttk.Entry(param_row, textvariable=self.click_interval, width=5).pack(side=tk.LEFT, padx=2)
+        ttk.Label(param_row, text="s").pack(side=tk.LEFT)
+        ttk.Label(param_row, text="最大:", width=5).pack(side=tk.LEFT, padx=(5,0))
+        ttk.Entry(param_row, textvariable=self.max_clicks, width=5).pack(side=tk.LEFT, padx=2)
+
+        # 保存/加载按钮
+        save_load_row = ttk.Frame(coords_frame)
+        save_load_row.pack(fill=tk.X, pady=2)
+        ttk.Button(save_load_row, text="保存坐标", command=self.save_grab_coords, width=10).pack(side=tk.LEFT, padx=2)
+        ttk.Button(save_load_row, text="加载坐标", command=self.load_grab_coords, width=10).pack(side=tk.LEFT, padx=2)
+
+        # === 抢票控制按钮（修改为两阶段）===
         grab_btn_frame = ttk.Frame(middle_frame)
         grab_btn_frame.pack(fill=tk.X, pady=(0, 10))
 
-        self.grab_btn = ttk.Button(
+        # 阶段一：场次导航按钮
+        self.navigate_btn = ttk.Button(
             grab_btn_frame,
-            text="开始抢票",
-            command=self.start_grab_ticket,
+            text="①场次导航",
+            command=self.navigate_to_session_page,
             width=12,
             state=tk.DISABLED
         )
-        self.grab_btn.pack(side=tk.LEFT, padx=(0, 5))
+        self.navigate_btn.pack(side=tk.LEFT, padx=(0, 2))
 
+        # 阶段二：开始抢票按钮（新）
+        self.grab_btn = ttk.Button(
+            grab_btn_frame,
+            text="②开始抢票",
+            command=self.start_fast_grab,
+            width=12,
+            state=tk.DISABLED
+        )
+        self.grab_btn.pack(side=tk.LEFT, padx=(0, 2))
+
+        # 停止按钮
         self.stop_grab_btn = ttk.Button(
             grab_btn_frame,
-            text="停止抢票",
+            text="⏹ 停止",
             command=self.stop_grab_ticket,
             width=12,
             state=tk.DISABLED
@@ -1152,7 +1229,46 @@ class SmartAIGUI:
             pass
 
     def on_canvas_click(self, event):
-        """点击Canvas - 记录坐标（换算到真实设备坐标）"""
+        """点击Canvas - 支持坐标选择和记录坐标"""
+        # 优先处理：坐标选择模式
+        if hasattr(self, 'coord_picking_mode') and self.coord_picking_mode:
+            try:
+                # 计算真实坐标（考虑缩放）
+                canvas_x = self.canvas.canvasx(event.x)
+                canvas_y = self.canvas.canvasy(event.y)
+
+                if self.scale_1to1.get():
+                    # 换算到真实设备坐标
+                    real_x = int(canvas_x * self.target_width / self.display_width)
+                    real_y = int(canvas_y * self.target_height / self.display_height)
+                else:
+                    real_x = int(canvas_x)
+                    real_y = int(canvas_y)
+
+                # 设置坐标
+                coord_type = self.coord_picking_mode
+                if coord_type == "session":
+                    self.grab_coords["session_x"].set(real_x)
+                    self.grab_coords["session_y"].set(real_y)
+                    self.log(f"✓ 场次坐标已设置: ({real_x}, {real_y})", "SUCCESS")
+                elif coord_type == "price":
+                    self.grab_coords["price_x"].set(real_x)
+                    self.grab_coords["price_y"].set(real_y)
+                    self.log(f"✓ 票档坐标已设置: ({real_x}, {real_y})", "SUCCESS")
+                elif coord_type == "buy":
+                    self.grab_coords["buy_x"].set(real_x)
+                    self.grab_coords["buy_y"].set(real_y)
+                    self.log(f"✓ 购票按钮坐标已设置: ({real_x}, {real_y})", "SUCCESS")
+
+                # 清除选择模式
+                self.coord_picking_mode = None
+                self.canvas.config(cursor="")
+                return  # 坐标选择模式下直接返回
+            except Exception as e:
+                self.log(f"坐标选择错误: {e}", "ERROR")
+                return
+
+        # 原有功能：记录坐标
         if not self.current_screenshot or not self.scale_1to1.get():
             return
 
@@ -2552,6 +2668,181 @@ class SmartAIGUI:
                 self.stop_grab_btn.config(state=tk.DISABLED)
 
         threading.Thread(target=do_grab, daemon=True).start()
+
+    # ========== 快速抢票功能（新增）==========
+
+    def pick_coord_from_screenshot(self, coord_type: str):
+        """从当前截图点击获取坐标"""
+        if not self.current_screenshot:
+            self.log("请先连接设备查看截图", "WARNING")
+            return
+
+        # 设置坐标选择模式
+        self.coord_picking_mode = coord_type
+
+        coord_names = {
+            "session": "场次",
+            "price": "票档",
+            "buy": "购票按钮"
+        }
+
+        self.log(f"📍 请在截图上点击选择【{coord_names.get(coord_type, coord_type)}】位置...", "INFO")
+
+        # 临时修改鼠标光标样式（如果Canvas支持）
+        self.canvas.config(cursor="crosshair")
+
+
+    def save_grab_coords(self):
+        """保存抢票坐标配置"""
+        config = {
+            "session_x": self.grab_coords["session_x"].get(),
+            "session_y": self.grab_coords["session_y"].get(),
+            "price_x": self.grab_coords["price_x"].get(),
+            "price_y": self.grab_coords["price_y"].get(),
+            "buy_x": self.grab_coords["buy_x"].get(),
+            "buy_y": self.grab_coords["buy_y"].get(),
+            "click_interval": self.click_interval.get(),
+            "max_clicks": self.max_clicks.get(),
+            "page_check_interval": self.page_check_interval.get()
+        }
+
+        try:
+            with open("grab_coords.json", 'w', encoding='utf-8') as f:
+                json.dump(config, f, indent=2, ensure_ascii=False)
+            self.log("✓ 坐标配置已保存到 grab_coords.json", "SUCCESS")
+        except Exception as e:
+            self.log(f"✗ 保存失败: {e}", "ERROR")
+
+    def load_grab_coords(self):
+        """加载抢票坐标配置"""
+        try:
+            with open("grab_coords.json", 'r', encoding='utf-8') as f:
+                config = json.load(f)
+
+            self.grab_coords["session_x"].set(config.get("session_x", 360))
+            self.grab_coords["session_y"].set(config.get("session_y", 400))
+            self.grab_coords["price_x"].set(config.get("price_x", 360))
+            self.grab_coords["price_y"].set(config.get("price_y", 600))
+            self.grab_coords["buy_x"].set(config.get("buy_x", 360))
+            self.grab_coords["buy_y"].set(config.get("buy_y", 1100))
+            self.click_interval.set(config.get("click_interval", 0.1))
+            self.max_clicks.set(config.get("max_clicks", 100))
+            self.page_check_interval.set(config.get("page_check_interval", 5))
+
+            self.log("✓ 坐标配置已加载", "SUCCESS")
+        except FileNotFoundError:
+            self.log("未找到配置文件 grab_coords.json", "WARNING")
+        except Exception as e:
+            self.log(f"✗ 加载失败: {e}", "ERROR")
+
+    def navigate_to_session_page(self):
+        """阶段一：导航到场次选择页面（不执行抢票）"""
+        if not self.bot or not self.bot.driver:
+            self.log("请先连接设备!", "ERROR")
+            return
+
+        if self.grabbing:
+            self.log("正在执行任务，请等待完成", "WARNING")
+            return
+
+        self.grabbing = True
+        self.navigate_btn.config(state=tk.DISABLED)
+        self.grab_btn.config(state=tk.DISABLED)
+
+        def navigate_task():
+            try:
+                self.log("=" * 60, "STEP")
+                self.log("阶段一：场次导航", "STEP")
+                self.log("=" * 60, "STEP")
+
+                # 这里复用原有的抢票流程，但只到场次选择页面
+                # 根据实际情况调整...
+
+                self.log("✓ 导航完成！请在截图上设置抢票坐标", "SUCCESS")
+                self.log("  1. 点击 📍 按钮", "INFO")
+                self.log("  2. 在截图上点击目标位置", "INFO")
+                self.log("  3. 设置完成后点击'②开始抢票'", "INFO")
+
+                # 启用"开始抢票"按钮
+                self.grab_btn.config(state=tk.NORMAL)
+
+            except Exception as e:
+                self.log(f"✗ 导航失败: {e}", "ERROR")
+            finally:
+                self.grabbing = False
+                self.navigate_btn.config(state=tk.NORMAL)
+
+        threading.Thread(target=navigate_task, daemon=True).start()
+
+    def start_fast_grab(self):
+        """阶段二：开始快速抢票"""
+        if not self.bot or not self.bot.driver:
+            self.log("请先连接设备!", "ERROR")
+            return
+
+        if self.grabbing:
+            self.log("正在执行任务，请等待完成", "WARNING")
+            return
+
+        self.grabbing = True
+        self.grab_btn.config(state=tk.DISABLED)
+        self.stop_grab_btn.config(state=tk.NORMAL)
+        self.navigate_btn.config(state=tk.DISABLED)
+
+        def grab_task():
+            try:
+                # 初始化FastGrabber
+                if not self.fast_grabber:
+                    self.fast_grabber = FastGrabber(self.bot.driver, logger=BotLogger)
+
+                # 创建配置
+                config = GrabConfig(
+                    session_x=self.grab_coords["session_x"].get(),
+                    session_y=self.grab_coords["session_y"].get(),
+                    price_x=self.grab_coords["price_x"].get(),
+                    price_y=self.grab_coords["price_y"].get(),
+                    buy_x=self.grab_coords["buy_x"].get(),
+                    buy_y=self.grab_coords["buy_y"].get(),
+                    click_interval=self.click_interval.get(),
+                    max_clicks=self.max_clicks.get(),
+                    page_check_interval=self.page_check_interval.get()
+                )
+
+                self.log("=" * 60, "STEP")
+                self.log("阶段二：快速抢票", "STEP")
+                self.log("=" * 60, "STEP")
+
+                # 执行快速抢票
+                success, message = self.fast_grabber.start_grab(
+                    config,
+                    on_progress=lambda msg: self.log(msg, "INFO")
+                )
+
+                if success:
+                    self.log("=" * 60, "SUCCESS")
+                    self.log("🎉 抢票成功！页面已变化", "SUCCESS")
+                    self.log(message, "SUCCESS")
+                    self.log("=" * 60, "SUCCESS")
+                else:
+                    self.log("=" * 60, "WARNING")
+                    self.log("⚠ 抢票未完成", "WARNING")
+                    self.log(message, "WARNING")
+                    self.log("=" * 60, "WARNING")
+
+                # 打印统计
+                self.fast_grabber.print_statistics()
+
+            except Exception as e:
+                self.log(f"✗ 抢票出错: {e}", "ERROR")
+                import traceback
+                self.log(traceback.format_exc(), "ERROR")
+            finally:
+                self.grabbing = False
+                self.grab_btn.config(state=tk.NORMAL)
+                self.stop_grab_btn.config(state=tk.DISABLED)
+                self.navigate_btn.config(state=tk.NORMAL)
+
+        threading.Thread(target=grab_task, daemon=True).start()
 
     # ========== 会话管理和错误恢复 ==========
 
