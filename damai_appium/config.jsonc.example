@@ -1,7 +1,7 @@
 {
   "server_url": "http://127.0.0.1:4723",
-  "adb_port": "54588",
-  "keyword": "乌龙山伯爵",
+  "adb_port": "62001",
+  "keyword": "演出关键词",
   "users": [],
   "city": "北京",
   "date": "11.2",

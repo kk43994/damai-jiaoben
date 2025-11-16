@@ -124,12 +124,13 @@ class ConnectionFirstAid:
 
     # ========== 体检功能 ==========
 
-    def diagnose_all(self, udid: Optional[str] = None) -> DiagnosticReport:
+    def diagnose_all(self, udid: Optional[str] = None, driver=None) -> DiagnosticReport:
         """
         全面体检 - 检测所有可能的问题
 
         Args:
             udid: 设备UDID，如果为None则使用self.adb_port
+            driver: WebDriver实例（可选，如果提供则进行详细健康检测）
 
         Returns:
             DiagnosticReport: 详细的诊断报告
@@ -151,8 +152,8 @@ class ConnectionFirstAid:
         # 2. ADB诊断
         self._diagnose_adb(report, udid)
 
-        # 3. WebDriver诊断（需要传入driver，这里只做基础检测）
-        self._diagnose_webdriver_basic(report)
+        # 3. WebDriver诊断（如果提供driver则进行详细检测）
+        self._diagnose_webdriver_basic(report, driver=driver)
 
         # 4. 网络诊断
         self._diagnose_network(report, udid)
@@ -460,8 +461,13 @@ class ConnectionFirstAid:
 
         self._log("", "INFO")
 
-    def _diagnose_webdriver_basic(self, report: DiagnosticReport):
-        """诊断WebDriver基础状态"""
+    def _diagnose_webdriver_basic(self, report: DiagnosticReport, driver=None):
+        """
+        诊断WebDriver基础状态
+
+        Args:
+            driver: WebDriver实例（可选，如果提供则进行详细健康检测）
+        """
         self._log("━"*80, "INFO")
         self._log("[3/5] 🌐 诊断 WebDriver 连接", "INFO")
         self._log("━"*80, "INFO")
@@ -487,7 +493,94 @@ class ConnectionFirstAid:
         except Exception as e:
             self._log(f"    ⚠️ 无法检测WebDriver会话: {e}", "WARNING")
 
-        self._log("  ℹ️ 详细的WebDriver健康检测需要传入driver实例", "INFO")
+        # 如果提供了driver实例，进行详细健康检测
+        if driver:
+            self._log("", "INFO")
+            self._log("  [3.2] 检测 WebDriver 健康状态...", "INFO")
+            try:
+                # 检查session_id
+                if driver.session_id:
+                    self._log(f"    ✓ Session ID: {driver.session_id[:16]}...", "SUCCESS")
+                    report.webdriver_status['has_valid_session'] = True
+                else:
+                    self._log("    ✗ Session ID为空", "ERROR")
+                    report.webdriver_status['has_valid_session'] = False
+                    issue = DiagnosticIssue(
+                        category="WebDriver",
+                        severity=ProblemSeverity.CRITICAL,
+                        title="WebDriver会话无效",
+                        description="Session ID为空，会话可能已失效",
+                        possible_causes=[
+                            "WebDriver连接中断",
+                            "Appium服务器重启",
+                            "会话超时"
+                        ],
+                        fix_suggestions=[
+                            "重新创建WebDriver连接",
+                            "检查Appium服务器状态",
+                            "增加newCommandTimeout配置"
+                        ],
+                        auto_fixable=True
+                    )
+                    report.issues.append(issue)
+
+                # 尝试获取当前Activity（验证通信）
+                try:
+                    current_activity = driver.current_activity
+                    self._log(f"    ✓ 当前Activity: {current_activity}", "SUCCESS")
+                    report.webdriver_status['current_activity'] = current_activity
+                    report.webdriver_status['is_responsive'] = True
+                except Exception as e:
+                    self._log(f"    ✗ 无法获取Activity: {e}", "ERROR")
+                    report.webdriver_status['is_responsive'] = False
+
+                    # 检测具体错误类型
+                    error_msg = str(e).lower()
+                    if "invalid session id" in error_msg or "session not found" in error_msg:
+                        issue = DiagnosticIssue(
+                            category="WebDriver",
+                            severity=ProblemSeverity.CRITICAL,
+                            title="WebDriver会话已失效",
+                            description=f"会话通信失败: {str(e)[:100]}",
+                            possible_causes=[
+                                "会话已过期",
+                                "Appium服务器重启",
+                                "设备连接中断"
+                            ],
+                            fix_suggestions=[
+                                "重新创建WebDriver连接",
+                                "启用WebDriver健康监控",
+                                "使用自动重连机制"
+                            ],
+                            auto_fixable=True
+                        )
+                        report.issues.append(issue)
+                    elif "timeout" in error_msg:
+                        issue = DiagnosticIssue(
+                            category="WebDriver",
+                            severity=ProblemSeverity.WARNING,
+                            title="WebDriver通信超时",
+                            description=f"获取Activity超时: {str(e)[:100]}",
+                            possible_causes=[
+                                "网络延迟过高",
+                                "设备响应缓慢",
+                                "UiAutomator2服务器异常"
+                            ],
+                            fix_suggestions=[
+                                "检查网络连接",
+                                "重启设备",
+                                "增加超时配置"
+                            ],
+                            auto_fixable=False
+                        )
+                        report.issues.append(issue)
+
+            except Exception as e:
+                self._log(f"    ✗ WebDriver健康检测失败: {e}", "ERROR")
+                report.webdriver_status['health_check_error'] = str(e)
+        else:
+            self._log("  ℹ️ 未提供driver实例，跳过详细健康检测", "INFO")
+
         self._log("", "INFO")
 
     def _diagnose_network(self, report: DiagnosticReport, udid: str):
@@ -816,19 +909,20 @@ class ConnectionFirstAid:
 
     # ========== 完整流程 ==========
 
-    def diagnose_and_fix(self, udid: Optional[str] = None, auto_fix: bool = True) -> Tuple[DiagnosticReport, bool]:
+    def diagnose_and_fix(self, udid: Optional[str] = None, driver=None, auto_fix: bool = True) -> Tuple[DiagnosticReport, bool]:
         """
         完整流程：先体检，后修复
 
         Args:
             udid: 设备UDID
+            driver: WebDriver实例（可选，用于详细健康检测）
             auto_fix: 是否自动修复
 
         Returns:
             (诊断报告, 修复是否成功)
         """
         # 1. 全面体检
-        report = self.diagnose_all(udid)
+        report = self.diagnose_all(udid, driver=driver)
 
         # 2. 针对性修复
         fix_success = True

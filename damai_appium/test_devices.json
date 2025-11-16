@@ -1,0 +1,21 @@
+{
+  "devices": [
+    {
+      "name": "红手指设备1",
+      "address": "127.0.0.1:59700",
+      "device_type": "hongshouzhi",
+      "status": "disconnected",
+      "last_connected": null,
+      "error_message": "'NoneType' object has no attribute 'strip'"
+    },
+    {
+      "name": "设备_127.0.0.1:58358",
+      "address": "127.0.0.1:58358",
+      "device_type": "emulator",
+      "status": "connected",
+      "last_connected": "2025-11-06T05:50:39.437732",
+      "error_message": null
+    }
+  ],
+  "current_device": null
+}
