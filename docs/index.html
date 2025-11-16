@@ -938,31 +938,101 @@
     <!-- 下载 -->
     <section id="download">
         <div class="container">
-            <h2>⬇️ 下载项目</h2>
+            <h2>⬇️ 获取项目</h2>
 
-            <div class="download-box">
-                <h3>🎁 最新版本: v2.2</h3>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; color: var(--color-gray);">
+                根据您的技术水平和网络环境选择合适的方式
+            </p>
 
-                <a href="#" class="btn btn-primary">📦 下载懒人包 (ZIP - 约1GB)</a>
-
-                <div style="background: #f5f5f5; padding: 1.5rem; border-radius: 10px;">
-                    <h4 style="margin-bottom: 1rem; color: var(--color-black);">包含内容：</h4>
-                    <ul style="margin-left: 1.5rem; line-height: 2;">
-                        <li>✅ Python + Node.js 便携版</li>
-                        <li>✅ Appium及驱动（已配置）</li>
-                        <li>✅ Android SDK工具（ADB）</li>
-                        <li>✅ 完整项目源代码</li>
-                        <li>✅ 一键配置和启动脚本</li>
-                        <li>✅ 红手指专用配置工具</li>
-                        <li>✅ 完整文档和教程</li>
-                    </ul>
+            <!-- 方式一：自动下载脚本（推荐） -->
+            <div class="download-box" style="border: 3px solid #27ae60; background: #f0fff4;">
+                <div style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; padding: 1rem; border-radius: 10px 10px 0 0; margin: -2rem -2rem 2rem -2rem;">
+                    <h3 style="margin: 0; color: white;">⭐ 方式一：自动下载脚本（推荐）</h3>
+                    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1rem;">适合网络条件好的用户，一键自动下载所有依赖</p>
                 </div>
 
-                <div style="margin-top: 2rem; text-align: center;">
-                    <p style="color: var(--color-gray);">或者从GitHub下载源码：</p>
-                    <code style="display: block; background: var(--color-black); color: var(--color-white); padding: 1rem; border-radius: 8px; margin-top: 1rem; font-family: 'Courier New', monospace;">
-                        git clone https://github.com/yourusername/mobile-automation-demo.git
-                    </code>
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--color-black); margin-bottom: 1rem;">📥 下载量：约100MB | ⏱️ 耗时：5-15分钟</h4>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e0e0e0; margin-bottom: 1.5rem;">
+                        <p style="font-weight: bold; margin-bottom: 1rem;">📋 步骤：</p>
+                        <ol style="margin-left: 1.5rem; line-height: 2.5;">
+                            <li><strong>克隆源码</strong>：
+                                <code style="display: block; background: var(--color-black); color: var(--color-white); padding: 0.8rem; border-radius: 5px; margin-top: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.95rem;">git clone https://github.com/kk43994/damai-jiaoben.git</code>
+                            </li>
+                            <li><strong>运行自动下载脚本</strong>：双击 <code style="background: #fff3cd; padding: 0.2rem 0.6rem; border-radius: 3px; color: #856404;">scripts\自动下载依赖.bat</code></li>
+                            <li><strong>等待下载完成</strong>：脚本会自动下载并解压所有组件</li>
+                            <li><strong>完成配置</strong>：运行 <code style="background: #d4edda; padding: 0.2rem 0.6rem; border-radius: 3px; color: #155724;">scripts\一键配置.bat</code></li>
+                        </ol>
+                    </div>
+
+                    <div style="background: #e8f8f5; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #27ae60;">
+                        <p style="margin: 0; color: #155724;"><strong>✅ 优点：</strong></p>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; color: #155724;">
+                            <li>完全自动化，无需手动下载</li>
+                            <li>自动解压到正确位置</li>
+                            <li>支持断点续传</li>
+                            <li>下载量最小（约100MB）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 方式二：手动下载清单 -->
+            <div class="download-box" style="border: 3px solid #3498db; background: #f0f8ff; margin-top: 3rem;">
+                <div style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; padding: 1rem; border-radius: 10px 10px 0 0; margin: -2rem -2rem 2rem -2rem;">
+                    <h3 style="margin: 0; color: white;">🔧 方式二：手动下载清单</h3>
+                    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1rem;">适合网络不稳定或需要使用国内镜像的用户</p>
+                </div>
+
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--color-black); margin-bottom: 1rem;">📥 下载量：约100MB | ⏱️ 耗时：根据网速而定</h4>
+
+                    <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e0e0e0; margin-bottom: 1.5rem;">
+                        <p style="font-weight: bold; margin-bottom: 1rem;">📋 需要下载的组件：</p>
+                        <ul style="margin-left: 1.5rem; line-height: 2.5;">
+                            <li>✅ Python 3.11 便携版 (~25MB)</li>
+                            <li>✅ Node.js 20.x 便携版 (~50MB)</li>
+                            <li>✅ Android SDK Platform Tools (~10MB)</li>
+                            <li>✅ Appium Settings APK (~5MB)</li>
+                            <li>✅ UIAutomator2 Server APK (~2MB)</li>
+                        </ul>
+
+                        <p style="margin-top: 1.5rem; text-align: center;">
+                            <a href="../DOWNLOAD_GUIDE.md" style="background: #3498db; color: white; padding: 0.8rem 2rem; border-radius: 30px; text-decoration: none; display: inline-block; font-weight: bold;">
+                                📖 查看详细下载清单（含国内镜像）
+                            </a>
+                        </p>
+                    </div>
+
+                    <div style="background: #e3f2fd; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #3498db;">
+                        <p style="margin: 0; color: #0d47a1;"><strong>✅ 优点：</strong></p>
+                        <ul style="margin: 0.5rem 0 0 1.5rem; color: #0d47a1;">
+                            <li>可选择国内镜像源（更快）</li>
+                            <li>可断点续传大文件</li>
+                            <li>完全自主控制下载过程</li>
+                            <li>适合网络不稳定的环境</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 方式三：懒人包（预留） -->
+            <div class="download-box" style="border: 3px solid #95a5a6; background: #f8f9fa; margin-top: 3rem; opacity: 0.7;">
+                <div style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); color: white; padding: 1rem; border-radius: 10px 10px 0 0; margin: -2rem -2rem 2rem -2rem;">
+                    <h3 style="margin: 0; color: white;">📦 方式三：完整懒人包（制作中）</h3>
+                    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1rem;">包含所有依赖的完整压缩包，解压即用</p>
+                </div>
+
+                <div style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #ffc107; text-align: center;">
+                    <p style="margin: 0; color: #856404; font-size: 1.1rem;">
+                        <strong>🚧 懒人包正在制作中...</strong><br>
+                        预计包含所有组件（Python + Node.js + Android SDK + Appium）<br>
+                        下载量：约1-1.5GB | 推荐新手使用
+                    </p>
+                    <p style="margin: 1rem 0 0 0; color: #856404;">
+                        当前推荐使用 <strong>方式一</strong> 或 <strong>方式二</strong> 获取项目
+                    </p>
                 </div>
             </div>
 
