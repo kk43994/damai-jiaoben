@@ -188,12 +188,13 @@ class ConnectionAutoFixer:
 
     def clear_zombie_connections(self, max_retries: int = 3) -> bool:
         """
-        清除ADB僵尸连接
+        清除ADB僵尸连接（智能版）
 
         清理策略：
-        1. 断开所有ADB连接
-        2. 重启ADB服务器
-        3. 等待网络连接完全释放
+        1. 先检测是否有僵尸连接
+        2. 如果有，才执行清理：断开所有ADB连接
+        3. 重启ADB服务器
+        4. 等待网络连接完全释放
 
         Args:
             max_retries: 最大重试次数
@@ -202,6 +203,33 @@ class ConnectionAutoFixer:
             是否成功清除
         """
         self._log("开始清除ADB僵尸连接...", "INFO")
+
+        # 优化：先检测是否真的有僵尸连接
+        try:
+            result = subprocess.run(
+                f'"{self.adb_path}" devices',
+                capture_output=True,
+                text=True,
+                shell=True,
+                timeout=5
+            )
+
+            offline_count = 0
+            unauthorized_count = 0
+            if result.returncode == 0 and result.stdout:
+                for line in result.stdout.split('\n'):
+                    if 'offline' in line:
+                        offline_count += 1
+                    elif 'unauthorized' in line:
+                        unauthorized_count += 1
+
+            if offline_count == 0 and unauthorized_count == 0:
+                self._log("✓ 未检测到僵尸连接，跳过清理", "INFO")
+                return True
+
+            self._log(f"检测到 {offline_count + unauthorized_count} 个异常连接（离线:{offline_count}, 未授权:{unauthorized_count}），开始清理...", "INFO")
+        except Exception as e:
+            self._log(f"检测异常连接时出错: {e}，继续执行清理", "WARNING")
 
         try:
             for attempt in range(max_retries):
@@ -284,8 +312,24 @@ class ConnectionAutoFixer:
             return False
 
     def fix_offline_device(self, udid: str) -> bool:
-        """修复离线的ADB设备"""
+        """修复离线的ADB设备（优化版）"""
         self._log(f"检测到设备离线，尝试修复: {udid}", "WARNING")
+
+        # 优化：先检查端口可达性，避免浪费时间
+        if ':' in udid:
+            host, port_str = udid.split(':')
+            port = int(port_str)
+            reachable, reason = self._test_port_reachable(host, port, timeout=2)
+            if not reachable:
+                self._log(f"✗ 端口 {port} 不可达: {reason}", "ERROR")
+                self._log("", "ERROR")
+                self._log("⚠️  设备可能处于以下状态:", "ERROR")
+                self._log("  • 红手指云手机未启动或离线", "ERROR")
+                self._log("  • 端口号配置错误", "ERROR")
+                self._log("  • 网络连接问题", "ERROR")
+                self._log("", "ERROR")
+                self._show_port_check_guide(port_str)
+                return False  # 提前返回，不浪费时间执行修复流程
 
         try:
             # 1. 先尝试清除僵尸连接
@@ -327,28 +371,76 @@ class ConnectionAutoFixer:
             self._log(f"✗ 修复设备时出错: {e}", "ERROR")
             return False
 
-    def _test_port_reachable(self, host: str, port: int, timeout: float = 2) -> bool:
-        """测试端口是否可达"""
+    def _show_port_check_guide(self, port: str):
+        """显示红手指连接排查指南"""
+        self._log("="*60, "INFO")
+        self._log("🔧 红手指连接排查指南", "INFO")
+        self._log("="*60, "INFO")
+        self._log("", "INFO")
+        self._log("请按以下步骤检查:", "INFO")
+        self._log("", "INFO")
+        self._log("1️⃣  打开红手指客户端", "INFO")
+        self._log("   - 确认云手机状态显示为'在线'（绿色）", "INFO")
+        self._log("   - 如果离线，请点击'启动'按钮", "INFO")
+        self._log("", "INFO")
+        self._log("2️⃣  查看ADB端口号", "INFO")
+        self._log("   - 在云手机卡片上找到端口号显示", "INFO")
+        self._log(f"   - 当前配置端口: {port}", "INFO")
+        self._log("   - 如果不一致，请在GUI中修改端口号", "INFO")
+        self._log("", "INFO")
+        self._log("3️⃣  确保ADB调试已开启", "INFO")
+        self._log("   - 打开云手机的'设置' → '开发者选项'", "INFO")
+        self._log("   - 确保'USB调试'已开启", "INFO")
+        self._log("", "INFO")
+        self._log("4️⃣  尝试重启", "INFO")
+        self._log("   - 重启红手指客户端", "INFO")
+        self._log("   - 或重启云手机", "INFO")
+        self._log("", "INFO")
+        self._log("="*60, "INFO")
+
+    def _test_port_reachable(self, host: str, port: int, timeout: float = 2) -> Tuple[bool, str]:
+        """
+        测试端口是否可达（增强版）
+
+        Args:
+            host: 主机地址
+            port: 端口号
+            timeout: 超时时间（秒）
+
+        Returns:
+            (可达性, 详细信息)
+        """
         import socket
         try:
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(timeout)
             result = sock.connect_ex((host, port))
             sock.close()
-            return result == 0
-        except:
-            return False
+
+            if result == 0:
+                return True, "端口可达"
+            elif result == 10061:  # Windows: Connection refused
+                return False, "端口拒绝连接（设备可能未启动ADB服务）"
+            elif result == 10060:  # Windows: Connection timeout
+                return False, "连接超时（网络不可达或防火墙阻止）"
+            else:
+                return False, f"连接失败（错误代码: {result}）"
+        except socket.timeout:
+            return False, "连接超时（网络延迟过高或设备离线）"
+        except Exception as e:
+            return False, f"检测失败: {str(e)}"
 
     def connect_adb_device(self, udid: str) -> bool:
         """连接ADB设备"""
         self._log(f"正在连接ADB设备: {udid}...", "INFO")
 
-        # 快速检查端口可达性
+        # 快速检查端口可达性（优化：返回详细原因）
         if ':' in udid:
             host, port_str = udid.split(':')
             port = int(port_str)
-            if not self._test_port_reachable(host, port):
-                self._log(f"✗ 端口 {port} 不可达，设备可能离线", "WARNING")
+            reachable, reason = self._test_port_reachable(host, port)
+            if not reachable:
+                self._log(f"✗ 端口 {port} 不可达: {reason}", "WARNING")
                 # 继续尝试连接，因为有时socket检测不准确
 
         try:
@@ -357,7 +449,7 @@ class ConnectionAutoFixer:
                 capture_output=True,
                 text=True,
                 shell=True,
-                timeout=30
+                timeout=10  # 优化: 从30秒降低到10秒，快速失败
             )
 
             if result.returncode == 0:
