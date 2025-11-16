@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="移动端自动化测试演示项目 - 基于Appium的技术学习框架">
-    <title>移动端自动化测试演示 | Appium技术学习项目</title>
+    <title>移动端自动化测试演示 - Mobile Automation Demo</title>
     <style>
-        /* ===== 全局样式 ===== */
+        /* ========== 基础样式 ========== */
         * {
             margin: 0;
             padding: 0;
@@ -17,167 +16,132 @@
             --color-black: #000000;
             --color-dark: #1a1a1a;
             --color-gray: #333333;
-            --color-light-gray: #999999;
-            --color-border: #e0e0e0;
             --color-white: #ffffff;
+            --color-light-gray: #f5f5f5;
             --color-danger: #ff0000;
-            --color-warning: #ffaa00;
+            --color-warning: #ffc107;
+            --color-success: #27ae60;
+            --color-info: #3498db;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
             line-height: 1.8;
             color: var(--color-gray);
             background: var(--color-white);
-            overflow-x: hidden;
         }
 
-        /* ===== 动画定义 ===== */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        /* ===== 导航栏 ===== */
-        nav {
-            background: var(--color-black);
-            color: var(--color-white);
-            padding: 1.2rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            animation: fadeIn 0.5s ease;
-        }
-
-        nav .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        nav .logo {
-            font-size: 1.4rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        nav a {
-            color: var(--color-white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        nav a::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: var(--color-white);
-            transition: width 0.3s ease;
-        }
-
-        nav a:hover::after {
-            width: 100%;
-        }
-
-        /* ===== 法律声明横幅 ===== */
-        .legal-banner {
-            background: linear-gradient(135deg, var(--color-danger) 0%, #cc0000 100%);
-            color: var(--color-white);
-            padding: 1.5rem 2rem;
-            text-align: center;
-            font-weight: 600;
-            animation: slideInLeft 0.6s ease;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
-        }
-
-        .legal-banner .warning {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .legal-banner a {
-            color: var(--color-white);
-            text-decoration: underline;
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-        }
-
-        .legal-banner a:hover {
-            opacity: 0.8;
-        }
-
-        /* ===== 容器 ===== */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 2rem;
         }
 
-        /* ===== Hero区域 ===== */
+        /* ========== 导航栏 ========== */
+        nav {
+            background: var(--color-black);
+            color: var(--color-white);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--color-white);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.3s;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* ========== 法律警告横幅 ========== */
+        .legal-banner {
+            background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%);
+            color: var(--color-white);
+            padding: 1.2rem 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.05rem;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* ========== Section通用样式 ========== */
+        section {
+            padding: 5rem 0;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        section:nth-child(even) {
+            background: var(--color-white);
+        }
+
+        section:nth-child(odd) {
+            background: var(--color-black);
+            color: var(--color-white);
+        }
+
+        section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        section h3 {
+            font-size: 1.8rem;
+            margin: 2rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        section h4 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        /* ========== Hero区域 ========== */
         .hero {
             background: var(--color-black);
             color: var(--color-white);
-            padding: 6rem 2rem;
             text-align: center;
+            padding: 6rem 0 5rem 0;
             position: relative;
             overflow: hidden;
         }
@@ -185,485 +149,323 @@
         .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.02) 50%, transparent 70%);
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            top: -100px;
+            right: -100px;
             animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
         }
 
         .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-weight: 800;
-            letter-spacing: 2px;
-            animation: fadeInUp 0.8s ease;
-            position: relative;
-            z-index: 1;
         }
 
-        .hero .subtitle {
-            font-size: 1.4rem;
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
             opacity: 0.9;
-            margin-bottom: 2.5rem;
-            font-weight: 300;
-            animation: fadeInUp 1s ease;
-            position: relative;
-            z-index: 1;
         }
 
-        .hero .buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 1.2s ease;
-            position: relative;
-            z-index: 1;
+        /* ========== 卡片样式 ========== */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
-        /* ===== 按钮样式 ===== */
+        .card {
+            background: var(--color-white);
+            color: var(--color-gray);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        section:nth-child(odd) .card {
+            background: var(--color-dark);
+            color: var(--color-white);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        /* ========== 按钮 ========== */
         .btn {
             display: inline-block;
             padding: 1rem 2.5rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            border: none;
             cursor: pointer;
-            border: 2px solid transparent;
-            font-size: 1.05rem;
         }
 
         .btn-primary {
-            background: var(--color-white);
-            color: var(--color-black);
-            border-color: var(--color-white);
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: var(--color-white);
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(52, 152, 219, 0.4);
         }
 
         .btn-secondary {
-            background: transparent;
+            background: var(--color-gray);
             color: var(--color-white);
-            border-color: var(--color-white);
         }
 
         .btn-secondary:hover {
-            background: var(--color-white);
-            color: var(--color-black);
-            transform: translateY(-3px);
+            background: var(--color-black);
         }
 
-        /* ===== 内容区域 ===== */
-        section {
-            padding: 5rem 2rem;
-            animation: fadeIn 1s ease;
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: var(--color-white);
         }
 
-        section:nth-child(even) {
+        .btn-success:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(39, 174, 96, 0.4);
+        }
+
+        /* ========== 高亮框 ========== */
+        .highlight-box {
+            background: var(--color-light-gray);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid var(--color-info);
+            margin: 2rem 0;
+        }
+
+        section:nth-child(odd) .highlight-box {
+            background: var(--color-dark);
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid var(--color-warning);
+            margin: 2rem 0;
+        }
+
+        .danger-box {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid var(--color-danger);
+            margin: 2rem 0;
+        }
+
+        .success-box {
+            background: #d4edda;
+            color: #155724;
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid var(--color-success);
+            margin: 2rem 0;
+        }
+
+        /* ========== 代码块 ========== */
+        code {
+            background: var(--color-light-gray);
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem;
+        }
+
+        pre {
             background: var(--color-black);
             color: var(--color-white);
+            padding: 1.5rem;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 1.5rem 0;
         }
 
-        section:nth-child(odd) {
-            background: var(--color-white);
-            color: var(--color-gray);
-        }
-
-        section h2 {
-            font-size: 2.8rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-
-        section:nth-child(odd) h2 {
-            color: var(--color-black);
-        }
-
-        /* ===== 特性卡片 ===== */
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
-        }
-
-        .feature-card {
-            background: var(--color-white);
-            color: var(--color-gray);
-            padding: 2.5rem;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.4s ease;
-            border: 2px solid transparent;
-            animation: fadeInUp 0.6s ease backwards;
-        }
-
-        .feature-card:nth-child(1) { animation-delay: 0.1s; }
-        .feature-card:nth-child(2) { animation-delay: 0.2s; }
-        .feature-card:nth-child(3) { animation-delay: 0.3s; }
-        .feature-card:nth-child(4) { animation-delay: 0.4s; }
-        .feature-card:nth-child(5) { animation-delay: 0.5s; }
-        .feature-card:nth-child(6) { animation-delay: 0.6s; }
-
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-            border-color: var(--color-black);
-        }
-
-        section:nth-child(even) .feature-card {
-            background: var(--color-dark);
+        pre code {
+            background: none;
             color: var(--color-white);
         }
 
-        section:nth-child(even) .feature-card:hover {
-            border-color: var(--color-white);
+        /* ========== 列表样式 ========== */
+        ul, ol {
+            margin-left: 2rem;
+            margin-top: 1rem;
         }
 
-        .feature-card .icon {
-            font-size: 3.5rem;
-            margin-bottom: 1.5rem;
-            display: block;
+        li {
+            margin-bottom: 0.8rem;
         }
 
-        .feature-card h3 {
-            font-size: 1.6rem;
-            margin-bottom: 1rem;
-            font-weight: 600;
-        }
-
-        section:nth-child(odd) .feature-card h3 {
-            color: var(--color-black);
-        }
-
-        .feature-card p {
-            line-height: 1.8;
-            opacity: 0.9;
-        }
-
-        /* ===== 高亮框 ===== */
-        .highlight-box {
-            background: #f5f5f5;
-            border-left: 5px solid var(--color-black);
+        /* ========== FAQ样式 ========== */
+        .faq-item {
+            background: var(--color-light-gray);
             padding: 2rem;
             border-radius: 10px;
-            margin: 2rem 0;
-            animation: slideInRight 0.8s ease;
-        }
-
-        section:nth-child(even) .highlight-box {
-            background: var(--color-dark);
-            border-left-color: var(--color-white);
-        }
-
-        .highlight-box strong {
-            color: var(--color-black);
-        }
-
-        section:nth-child(even) .highlight-box strong {
-            color: var(--color-white);
-        }
-
-        /* ===== 教程卡片 ===== */
-        .tutorials {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
-            margin-top: 3rem;
-        }
-
-        .tutorial-card {
-            background: var(--color-dark);
-            color: var(--color-white);
-            padding: 2.5rem;
-            border-radius: 15px;
-            border-left: 5px solid var(--color-white);
-            transition: all 0.4s ease;
-            animation: fadeInUp 0.6s ease backwards;
-        }
-
-        .tutorial-card:nth-child(1) { animation-delay: 0.1s; }
-        .tutorial-card:nth-child(2) { animation-delay: 0.3s; }
-        .tutorial-card:nth-child(3) { animation-delay: 0.5s; }
-        .tutorial-card:nth-child(4) { animation-delay: 0.7s; }
-
-        section:nth-child(odd) .tutorial-card {
-            background: var(--color-white);
-            color: var(--color-gray);
-            border-left-color: var(--color-black);
-        }
-
-        .tutorial-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-        }
-
-        .tutorial-card h3 {
-            font-size: 1.6rem;
             margin-bottom: 1.5rem;
-            font-weight: 600;
         }
 
-        section:nth-child(even) .tutorial-card h3 {
-            color: var(--color-white);
-        }
-
-        section:nth-child(odd) .tutorial-card h3 {
-            color: var(--color-black);
-        }
-
-        .tutorial-card ul {
-            margin-left: 1.5rem;
-            line-height: 2;
-        }
-
-        .tutorial-card a {
-            color: inherit;
-            text-decoration: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .tutorial-card a:hover {
-            opacity: 0.7;
-            text-decoration: underline;
-        }
-
-        /* ===== FAQ ===== */
-        .faq-item {
-            background: var(--color-white);
-            padding: 2rem;
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--color-border);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.6s ease backwards;
-        }
-
-        .faq-item:nth-child(1) { animation-delay: 0.1s; }
-        .faq-item:nth-child(2) { animation-delay: 0.2s; }
-        .faq-item:nth-child(3) { animation-delay: 0.3s; }
-        .faq-item:nth-child(4) { animation-delay: 0.4s; }
-        .faq-item:nth-child(5) { animation-delay: 0.5s; }
-        .faq-item:nth-child(6) { animation-delay: 0.6s; }
-
-        .faq-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
-        }
-
-        section:nth-child(even) .faq-item {
+        section:nth-child(odd) .faq-item {
             background: var(--color-dark);
-            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .faq-item h3 {
-            color: var(--color-black);
-            margin-bottom: 1rem;
-            font-weight: 600;
+            margin-top: 0;
+            color: var(--color-info);
+            font-size: 1.3rem;
         }
 
-        section:nth-child(even) .faq-item h3 {
-            color: var(--color-white);
+        /* ========== 步骤样式 ========== */
+        .steps {
+            counter-reset: step-counter;
         }
 
-        /* ===== 快速开始 ===== */
-        .quick-start {
-            background: #f9f9f9;
-            padding: 2.5rem;
-            border-radius: 15px;
+        .step {
+            background: var(--color-light-gray);
+            padding: 2rem;
+            border-radius: 10px;
             margin-bottom: 2rem;
-            border: 2px solid var(--color-border);
-            animation: slideInLeft 0.8s ease;
+            position: relative;
+            padding-left: 5rem;
         }
 
-        section:nth-child(even) .quick-start {
+        section:nth-child(odd) .step {
             background: var(--color-dark);
-            border-color: rgba(255, 255, 255, 0.1);
         }
 
-        .quick-start h3 {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--color-black);
-        }
-
-        section:nth-child(even) .quick-start h3 {
+        .step::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 2rem;
+            top: 2rem;
+            background: var(--color-info);
             color: var(--color-white);
-        }
-
-        .quick-start ol {
-            margin-left: 2rem;
-            line-height: 2.2;
-        }
-
-        .quick-start code {
-            background: var(--color-black);
-            color: var(--color-white);
-            padding: 0.3rem 0.7rem;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.95em;
-        }
-
-        /* ===== 下载区域 ===== */
-        .download-box {
-            background: var(--color-white);
-            color: var(--color-gray);
-            padding: 3rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-            max-width: 700px;
-            margin: 0 auto;
-            border: 3px solid var(--color-black);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .download-box h3 {
-            text-align: center;
-            color: var(--color-black);
-            margin-bottom: 2rem;
-            font-size: 2rem;
-        }
-
-        .download-box .btn-primary {
-            width: 100%;
-            max-width: 400px;
-            display: block;
-            margin: 0 auto 2rem;
-            background: var(--color-black);
-            color: var(--color-white);
-            padding: 1.5rem 3rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
             font-size: 1.2rem;
         }
 
-        .download-box .btn-primary:hover {
-            background: var(--color-gray);
+        .step h3 {
+            margin-top: 0;
         }
 
-        /* ===== 两列布局 ===== */
-        .two-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin-top: 2.5rem;
+        /* ========== 表格样式 ========== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: var(--color-white);
         }
 
-        .column {
-            animation: fadeInUp 0.8s ease backwards;
+        section:nth-child(odd) table {
+            background: var(--color-dark);
         }
 
-        .column:nth-child(1) { animation-delay: 0.2s; }
-        .column:nth-child(2) { animation-delay: 0.4s; }
-
-        .column h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
         }
 
-        .column ul {
-            margin-left: 2rem;
-            line-height: 2.2;
+        section:nth-child(odd) th,
+        section:nth-child(odd) td {
+            border-bottom-color: #444;
         }
 
-        /* ===== 页脚 ===== */
+        th {
+            background: var(--color-light-gray);
+            font-weight: 600;
+        }
+
+        section:nth-child(odd) th {
+            background: var(--color-black);
+        }
+
+        /* ========== 页脚 ========== */
         footer {
             background: var(--color-black);
             color: var(--color-white);
-            padding: 4rem 2rem 2rem;
+            padding: 3rem 0;
             text-align: center;
-        }
-
-        footer h3 {
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
         }
 
         footer a {
             color: var(--color-white);
             text-decoration: none;
-            transition: opacity 0.3s ease;
-            border-bottom: 1px solid transparent;
+            margin: 0 1rem;
         }
 
         footer a:hover {
-            opacity: 0.7;
-            border-bottom-color: var(--color-white);
+            text-decoration: underline;
         }
 
-        footer .divider {
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        .divider {
+            border-top: 1px solid rgba(255,255,255,0.2);
             padding-top: 2rem;
             margin-top: 2rem;
         }
 
-        /* ===== 响应式设计 ===== */
+        /* ========== 响应式设计 ========== */
         @media (max-width: 768px) {
             nav ul {
+                flex-direction: column;
                 gap: 1rem;
-                font-size: 0.9rem;
             }
 
             .hero h1 {
                 font-size: 2.5rem;
             }
 
-            .hero .subtitle {
-                font-size: 1.2rem;
-            }
-
-            section {
-                padding: 3rem 1.5rem;
-            }
-
             section h2 {
                 font-size: 2rem;
             }
 
-            .two-columns {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .features,
-            .tutorials {
+            .cards {
                 grid-template-columns: 1fr;
             }
 
-            .hero .buttons {
-                flex-direction: column;
+            .step {
+                padding-left: 2rem;
             }
 
-            .btn {
-                width: 100%;
-                text-align: center;
+            .step::before {
+                position: relative;
+                left: 0;
+                top: 0;
+                display: inline-block;
+                margin-right: 1rem;
             }
-        }
-
-        /* ===== 滚动条样式 ===== */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: var(--color-white);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--color-black);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--color-gray);
         }
     </style>
 </head>
@@ -671,69 +473,63 @@
     <!-- 导航栏 -->
     <nav>
         <div class="container">
-            <div class="logo">📱 Mobile Automation Demo</div>
+            <h1>📱 Mobile Automation Demo</h1>
             <ul>
-                <li><a href="#features">功能特性</a></li>
-                <li><a href="#quickstart">快速开始</a></li>
-                <li><a href="#tutorials">教程</a></li>
-                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#home">首页</a></li>
+                <li><a href="#features">功能</a></li>
                 <li><a href="#download">下载</a></li>
+                <li><a href="#install">安装教程</a></li>
+                <li><a href="#usage">使用教程</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><a href="#legal">法律声明</a></li>
             </ul>
         </div>
     </nav>
 
-    <!-- 法律声明横幅 -->
+    <!-- 法律警告横幅 -->
     <div class="legal-banner">
-        <div class="warning">⚠️ 法律声明：本项目仅供技术学习和研究使用</div>
-        <div>严禁用于商业倒票、破坏平台秩序等违法行为 | 违法使用后果自负 |
-        <a href="../LEGAL_NOTICE.md" target="_blank">点击查看完整法律声明 →</a></div>
+        ⚠️ 重要提示：本项目仅供技术学习和研究 | 严禁商业倒卖/违法犯罪 | 使用者违法后果自负 | <a href="#legal" style="color: white; text-decoration: underline;">点击查看详细法律声明</a>
     </div>
 
     <!-- Hero区域 -->
-    <div class="hero">
+    <section id="home" class="hero">
         <div class="container">
-            <h1>移动端自动化测试演示</h1>
-            <p class="subtitle">基于Appium的技术学习框架 - 以大麦App为测试案例</p>
-            <div class="buttons">
-                <a href="#download" class="btn btn-primary">⬇️ 下载懒人包</a>
-                <a href="#quickstart" class="btn btn-secondary">🚀 快速开始</a>
-            </div>
+            <h1>🤖 移动端自动化测试演示框架</h1>
+            <p>基于Appium + Python + OCR的移动端自动化技术学习项目</p>
+            <p style="font-size: 1.1rem; opacity: 0.8;">Mobile Automation Testing Demo Framework</p>
+            <a href="#download" class="btn btn-primary" style="margin-right: 1rem;">⬇️ 立即下载</a>
+            <a href="#install" class="btn btn-secondary">📖 查看教程</a>
         </div>
-    </div>
+    </section>
 
     <!-- 项目定位 -->
-    <section>
+    <section id="positioning">
         <div class="container">
-            <h2>📚 项目定位</h2>
-            <div class="highlight-box">
-                <p><strong>本项目是一个开源技术学习项目</strong>，旨在演示和教学：</p>
-                <ul style="margin: 1.5rem 0 1.5rem 2rem; line-height: 2.2;">
-                    <li>✅ <strong>移动端自动化测试技术</strong>（基于Appium框架）</li>
-                    <li>✅ <strong>Python自动化编程技术</strong></li>
-                    <li>✅ <strong>OCR文字识别技术应用</strong></li>
-                    <li>✅ <strong>自动化决策流程设计</strong></li>
-                    <li>✅ <strong>WebDriver健康监控技术</strong></li>
-                </ul>
-                <p><strong>项目以大麦App作为测试案例进行演示</strong>，仅用于技术学习、教学演示和学术研究。</p>
-            </div>
+            <h2>🎯 项目定位</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">本项目是一个开源技术学习项目，旨在演示移动端自动化测试技术</p>
 
-            <div class="two-columns">
-                <div class="column">
-                    <h3 style="color: #27ae60;">✅ 允许的用途</h3>
-                    <ul>
-                        <li>个人学习Python自动化技术</li>
-                        <li>研究Appium移动端自动化</li>
-                        <li>教学演示和学术交流</li>
-                        <li>技术竞赛、课程作业</li>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; margin-top: 3rem;">
+                <div class="success-box">
+                    <h3 style="color: #155724; margin-top: 0;">✅ 允许的用途</h3>
+                    <ul style="margin-left: 1.5rem; line-height: 2.5;">
+                        <li>✅ 学习Python自动化编程技术</li>
+                        <li>✅ 研究Appium移动端自动化框架</li>
+                        <li>✅ 学习OCR文字识别技术应用</li>
+                        <li>✅ 教学演示和学术交流</li>
+                        <li>✅ 技术竞赛、课程作业</li>
+                        <li>✅ 开源贡献和技术改进</li>
                     </ul>
                 </div>
-                <div class="column">
-                    <h3 style="color: #d63031;">❌ 严禁的行为</h3>
-                    <ul>
-                        <li>商业倒票、恶意抢票</li>
-                        <li>破坏平台公平秩序</li>
-                        <li>违反相关法律法规</li>
-                        <li>侵犯他人合法权益</li>
+
+                <div class="danger-box">
+                    <h3 style="color: #721c24; margin-top: 0;">❌ 严格禁止的行为</h3>
+                    <ul style="margin-left: 1.5rem; line-height: 2.5;">
+                        <li>❌ 商业倒票牟利（刑法第225条）</li>
+                        <li>❌ 恶意抢票破坏平台秩序</li>
+                        <li>❌ 侵犯他人合法权益</li>
+                        <li>❌ 违反平台服务条款</li>
+                        <li>❌ 其他违法犯罪行为</li>
+                        <li>❌ 未经授权的商业用途</li>
                     </ul>
                 </div>
             </div>
@@ -743,194 +539,37 @@
     <!-- 功能特性 -->
     <section id="features">
         <div class="container">
-            <h2>✨ 功能特性</h2>
-            <div class="features">
-                <div class="feature-card">
-                    <span class="icon">🤖</span>
-                    <h3>Appium自动化框架</h3>
-                    <p>基于Appium 2.x的移动端自动化测试框架，支持Android平台，演示完整的自动化测试流程。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">🩺</span>
-                    <h3>WebDriver健康监控</h3>
-                    <p>v2.2核心功能：实时监控WebDriver连接状态，自动检测和修复连接问题，确保稳定运行。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">🏥</span>
-                    <h3>连接急救箱</h3>
-                    <p>一键诊断和修复连接问题，支持ADB重启、Appium重连、设备重启等多种修复策略。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">⚡</span>
-                    <h3>快速抢票模式</h3>
-                    <p>v2.2新增快速抢票功能，优化点击流程，提升操作速度，支持坐标抢票和优先购买。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">🖥️</span>
-                    <h3>图形化界面</h3>
-                    <p>基于Tkinter的友好GUI界面，支持设备管理、配置编辑、流程监控、日志查看等功能。</p>
-                </div>
-                <div class="feature-card">
-                    <span class="icon">🔄</span>
-                    <h3>智能重试机制</h3>
-                    <p>支持流程重试、断点恢复、错误处理，提供健壮的异常恢复能力。</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 快速开始 -->
-    <section id="quickstart">
-        <div class="container">
-            <h2>🚀 快速开始</h2>
-            <div class="quick-start">
-                <h3>一键懒人包 - 3步即可运行</h3>
-                <ol style="font-size: 1.1rem;">
-                    <li><strong>下载懒人包</strong> - 点击下方按钮下载完整便携式包（约1GB）</li>
-                    <li><strong>解压并配置</strong> - 双击运行 <code>一键配置.bat</code>，自动配置环境</li>
-                    <li><strong>启动程序</strong> - 双击 <code>一键启动.bat</code>，自动启动Appium和GUI</li>
-                </ol>
-                <p style="margin-top: 1.5rem; font-size: 1.05rem; color: #27ae60;">
-                    <strong>✨ 懒人包特点：</strong>完全免安装 | 自动配置环境 | 包含红手指配置工具 | 一键启动
-                </p>
-            </div>
-
-            <div style="background: #f0f0f0; padding: 2rem; border-radius: 15px; margin-top: 2.5rem;">
-                <h3 style="color: var(--color-black); margin-bottom: 1.5rem; font-size: 1.8rem;">📦 懒人包包含</h3>
-                <div class="two-columns" style="gap: 2rem;">
-                    <div>
-                        <ul style="margin-left: 1.5rem; line-height: 2.2;">
-                            <li>Python便携版（免安装）</li>
-                            <li>Node.js便携版（免安装）</li>
-                            <li>Appium及驱动（已配置）</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <ul style="margin-left: 1.5rem; line-height: 2.2;">
-                            <li>Android SDK工具（ADB）</li>
-                            <li>项目源代码（最新版）</li>
-                            <li>一键启动脚本（傻瓜式）</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 教程文档 -->
-    <section id="tutorials">
-        <div class="container">
-            <h2>📖 详细教程</h2>
-            <div class="tutorials">
-                <div class="tutorial-card">
-                    <h3>📥 完整安装教程（小白版）</h3>
-                    <p style="margin-bottom: 1.5rem;">从零开始，手把手教你安装所有环境和依赖。</p>
-                    <ul>
-                        <li>第1章：安装Python</li>
-                        <li>第2章：安装Android SDK</li>
-                        <li>第3章：安装Node.js和Appium</li>
-                        <li>第4章：下载和配置项目</li>
-                        <li>第5章：配置红手指云手机</li>
-                        <li>第6章：首次运行和测试</li>
-                    </ul>
-                    <a href="guides/完整安装教程_小白版.md" class="btn btn-secondary" style="margin-top: 1.5rem; display: inline-block;">📖 阅读教程</a>
+            <h2>✨ 核心功能</h2>
+            <div class="cards">
+                <div class="card">
+                    <h3>🎨 图形化界面</h3>
+                    <p>现代化GUI设计，简洁直观，所有操作可视化完成，无需命令行知识。</p>
                 </div>
 
-                <div class="tutorial-card">
-                    <h3>🖥️ GUI操作指南</h3>
-                    <p style="margin-bottom: 1.5rem;">详细讲解GUI界面的每个功能，事无巨细。</p>
-                    <ul>
-                        <li>第1章：GUI界面概览</li>
-                        <li>第2章：设备连接</li>
-                        <li>第3章：配置演出信息</li>
-                        <li>第4章：功能选项详解</li>
-                        <li>第5章：运行和监控</li>
-                        <li>第6章：常见问题解答</li>
-                    </ul>
-                    <a href="guides/详细使用教程_GUI操作指南.md" class="btn btn-secondary" style="margin-top: 1.5rem; display: inline-block;">📖 阅读教程</a>
+                <div class="card">
+                    <h3>🔌 设备管理</h3>
+                    <p>支持真机和云手机（红手指），自动连接检测，智能故障恢复。</p>
                 </div>
 
-                <div class="tutorial-card">
-                    <h3>🔧 配置说明文档</h3>
-                    <p style="margin-bottom: 1.5rem;">详细解释配置文件的每个参数。</p>
-                    <ul>
-                        <li>设备配置参数</li>
-                        <li>演出信息配置</li>
-                        <li>票档选择配置</li>
-                        <li>高级选项配置</li>
-                        <li>配置示例和模板</li>
-                    </ul>
-                    <a href="current/V2.2_USER_GUIDE.md" class="btn btn-secondary" style="margin-top: 1.5rem; display: inline-block;">📖 阅读文档</a>
+                <div class="card">
+                    <h3>🤖 智能识别</h3>
+                    <p>基于PaddleOCR的文字识别，精准定位页面元素，适应不同屏幕分辨率。</p>
                 </div>
 
-                <div class="tutorial-card">
-                    <h3>💡 红手指使用指南</h3>
-                    <p style="margin-bottom: 1.5rem;">如何配置红手指云手机并连接到项目。</p>
-                    <ul>
-                        <li>注册和创建云手机</li>
-                        <li>开启ADB调试</li>
-                        <li>获取ADB端口号</li>
-                        <li>使用一键配置脚本</li>
-                        <li>常见问题解决</li>
-                    </ul>
-                    <a href="guides/红手指使用指南.md" class="btn btn-secondary" style="margin-top: 1.5rem; display: inline-block;">📖 阅读指南</a>
+                <div class="card">
+                    <h3>⚡ 健康监控</h3>
+                    <p>实时WebDriver连接监控，自动故障恢复，确保流程稳定运行。</p>
                 </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- 常见问题 -->
-    <section id="faq">
-        <div class="container">
-            <h2>❓ 常见问题</h2>
+                <div class="card">
+                    <h3>📊 实时监控</h3>
+                    <p>彩色日志输出，实时截图监控，运行状态一目了然。</p>
+                </div>
 
-            <div class="faq-item">
-                <h3>Q1: 懒人包和手动安装有什么区别？</h3>
-                <p><strong>A:</strong> <strong>懒人包</strong>包含所有运行时环境（Python、Node.js、Appium、ADB），解压即用，无需安装任何东西。<strong>手动安装</strong>需要自己安装Python、Node.js等环境，适合已经有开发环境的用户。<br><strong>推荐新手使用懒人包！</strong></p>
-            </div>
-
-            <div class="faq-item">
-                <h3>Q2: 懒人包下载后如何使用？</h3>
-                <p><strong>A:</strong> 非常简单！</p>
-                <ol style="margin-left: 2rem; margin-top: 0.5rem;">
-                    <li>下载懒人包ZIP文件并解压到任意目录</li>
-                    <li>双击运行 <code style="background: #e0e0e0; padding: 0.2rem 0.5rem; border-radius: 3px;">一键配置.bat</code>（仅首次需要，约5分钟）</li>
-                    <li>配置完成后，双击 <code style="background: #e0e0e0; padding: 0.2rem 0.5rem; border-radius: 3px;">一键启动.bat</code>即可启动程序</li>
-                    <li>首次运行请参考<a href="guides/完整安装教程_小白版.md">完整安装教程</a>配置红手指云手机</li>
-                </ol>
-            </div>
-
-            <div class="faq-item">
-                <h3>Q3: 红手指云手机如何配置？</h3>
-                <p><strong>A:</strong> 懒人包提供了专用配置脚本：</p>
-                <ol style="margin-left: 2rem; margin-top: 0.5rem;">
-                    <li>在红手指控制台查看云手机的ADB端口号</li>
-                    <li>双击运行 <code style="background: #e0e0e0; padding: 0.2rem 0.5rem; border-radius: 3px;">红手指配置.bat</code></li>
-                    <li>输入端口号，脚本会自动连接设备并安装必需的APK</li>
-                    <li>详细步骤请查看<a href="guides/红手指使用指南.md">红手指使用指南</a></li>
-                </ol>
-            </div>
-
-            <div class="faq-item">
-                <h3>Q4: 提示"adb不是内部或外部命令"怎么办？</h3>
-                <p><strong>A:</strong> 如果使用<strong>懒人包</strong>，请确保通过 <code style="background: #e0e0e0; padding: 0.2rem 0.5rem; border-radius: 3px;">一键启动.bat</code> 启动，不要直接运行Python文件。懒人包会自动配置ADB路径。<br>如果<strong>手动安装</strong>，需要配置Android SDK的环境变量，详见<a href="guides/完整安装教程_小白版.md#第2章安装android-sdk">安装教程</a>。</p>
-            </div>
-
-            <div class="faq-item">
-                <h3>Q5: 这个项目是否违法？会有法律风险吗？</h3>
-                <p><strong>A:</strong> 本项目本身是<strong>技术学习工具</strong>，技术是中立的。如果用于：</p>
-                <ul style="margin-left: 2rem; margin-top: 0.5rem;">
-                    <li>✅ 学习Python、Appium技术 - <strong>合法</strong></li>
-                    <li>✅ 个人研究自动化 - <strong>合法</strong></li>
-                    <li>❌ 商业倒票牟利 - <strong>违法</strong>（刑法第225条）</li>
-                    <li>❌ 破坏平台秩序 - <strong>违法</strong>（刑法第286条）</li>
-                </ul>
-                <p style="margin-top: 0.5rem;"><strong>使用者需对自己的行为负全部法律责任。</strong>请务必阅读<a href="../LEGAL_NOTICE.md">完整法律声明</a>。</p>
-            </div>
-
-            <div class="faq-item">
-                <h3>Q6: 懒人包体积很大，有没有精简版？</h3>
-                <p><strong>A:</strong> 懒人包约1GB是因为包含了完整的Python、Node.js运行时和PaddleOCR模型。如果你已经安装了Python和Node.js，可以下载<strong>源码包</strong>（约50MB），然后手动安装依赖。详见<a href="../README.md">项目文档</a>。</p>
+                <div class="card">
+                    <h3>🛠️ 容错机制</h3>
+                    <p>多重异常处理，智能重试策略，流程中断自动恢复。</p>
+                </div>
             </div>
         </div>
     </section>
@@ -939,114 +578,885 @@
     <section id="download">
         <div class="container">
             <h2>⬇️ 获取项目</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">选择最适合您的获取方式</p>
 
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; color: var(--color-gray);">
-                根据您的技术水平和网络环境选择合适的方式
-            </p>
+            <!-- 方式一：自动下载脚本 -->
+            <div class="highlight-box" style="border-left-color: var(--color-success);">
+                <h3 style="color: var(--color-success); margin-top: 0;">⭐ 方式一：自动下载脚本（推荐）</h3>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">下载量约100MB | 耗时5-15分钟 | 适合网络条件好的用户</p>
 
-            <!-- 方式一：自动下载脚本（推荐） -->
-            <div class="download-box" style="border: 3px solid #27ae60; background: #f0fff4;">
-                <div style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%); color: white; padding: 1rem; border-radius: 10px 10px 0 0; margin: -2rem -2rem 2rem -2rem;">
-                    <h3 style="margin: 0; color: white;">⭐ 方式一：自动下载脚本（推荐）</h3>
-                    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1rem;">适合网络条件好的用户，一键自动下载所有依赖</p>
-                </div>
-
-                <div style="margin-bottom: 2rem;">
-                    <h4 style="color: var(--color-black); margin-bottom: 1rem;">📥 下载量：约100MB | ⏱️ 耗时：5-15分钟</h4>
-
-                    <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e0e0e0; margin-bottom: 1.5rem;">
-                        <p style="font-weight: bold; margin-bottom: 1rem;">📋 步骤：</p>
-                        <ol style="margin-left: 1.5rem; line-height: 2.5;">
-                            <li><strong>克隆源码</strong>：
-                                <code style="display: block; background: var(--color-black); color: var(--color-white); padding: 0.8rem; border-radius: 5px; margin-top: 0.5rem; font-family: 'Courier New', monospace; font-size: 0.95rem;">git clone https://github.com/kk43994/damai-jiaoben.git</code>
-                            </li>
-                            <li><strong>运行自动下载脚本</strong>：双击 <code style="background: #fff3cd; padding: 0.2rem 0.6rem; border-radius: 3px; color: #856404;">scripts\自动下载依赖.bat</code></li>
-                            <li><strong>等待下载完成</strong>：脚本会自动下载并解压所有组件</li>
-                            <li><strong>完成配置</strong>：运行 <code style="background: #d4edda; padding: 0.2rem 0.6rem; border-radius: 3px; color: #155724;">scripts\一键配置.bat</code></li>
-                        </ol>
+                <h4>📋 步骤：</h4>
+                <div class="steps">
+                    <div class="step">
+                        <h3>克隆源码仓库</h3>
+                        <pre><code>git clone https://github.com/kk43994/damai-jiaoben.git
+cd damai-jiaoben</code></pre>
                     </div>
 
-                    <div style="background: #e8f8f5; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #27ae60;">
-                        <p style="margin: 0; color: #155724;"><strong>✅ 优点：</strong></p>
-                        <ul style="margin: 0.5rem 0 0 1.5rem; color: #155724;">
-                            <li>完全自动化，无需手动下载</li>
-                            <li>自动解压到正确位置</li>
-                            <li>支持断点续传</li>
-                            <li>下载量最小（约100MB）</li>
+                    <div class="step">
+                        <h3>运行自动下载脚本</h3>
+                        <p>双击运行：<code>scripts\自动下载依赖.bat</code></p>
+                        <p style="margin-top: 1rem;">脚本会自动下载并解压：</p>
+                        <ul>
+                            <li>Python 3.11 便携版 (~25MB)</li>
+                            <li>Node.js 20.x 便携版 (~50MB)</li>
+                            <li>Android SDK Platform Tools (~10MB)</li>
+                            <li>Appium Settings APK (~5MB)</li>
+                            <li>UIAutomator2 Server APK (~2MB)</li>
                         </ul>
                     </div>
+
+                    <div class="step">
+                        <h3>等待下载完成</h3>
+                        <p>脚本会自动下载、解压并放置到正确位置，大约需要5-15分钟（取决于网速）</p>
+                    </div>
+
+                    <div class="step">
+                        <h3>完成环境配置</h3>
+                        <p>下载完成后，双击运行：<code>scripts\一键配置.bat</code></p>
+                        <p style="margin-top: 1rem;">脚本会自动安装Python依赖和Appium驱动</p>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h4>✅ 优点：</h4>
+                    <ul>
+                        <li>完全自动化，无需手动下载</li>
+                        <li>自动解压到正确位置</li>
+                        <li>支持断点续传</li>
+                        <li>下载量最小（约100MB）</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- 方式二：手动下载清单 -->
-            <div class="download-box" style="border: 3px solid #3498db; background: #f0f8ff; margin-top: 3rem;">
-                <div style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); color: white; padding: 1rem; border-radius: 10px 10px 0 0; margin: -2rem -2rem 2rem -2rem;">
-                    <h3 style="margin: 0; color: white;">🔧 方式二：手动下载清单</h3>
-                    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1rem;">适合网络不稳定或需要使用国内镜像的用户</p>
-                </div>
+            <!-- 方式二：手动下载 -->
+            <div class="highlight-box" style="border-left-color: var(--color-info); margin-top: 3rem;">
+                <h3 style="color: var(--color-info); margin-top: 0;">🔧 方式二：手动下载（支持国内镜像）</h3>
+                <p style="font-size: 1.1rem; margin-bottom: 1.5rem;">下载量约100MB | 适合网络不稳定或需要使用镜像的用户</p>
 
-                <div style="margin-bottom: 2rem;">
-                    <h4 style="color: var(--color-black); margin-bottom: 1rem;">📥 下载量：约100MB | ⏱️ 耗时：根据网速而定</h4>
+                <h4>📥 需要下载的组件：</h4>
 
-                    <div style="background: white; padding: 1.5rem; border-radius: 10px; border: 2px solid #e0e0e0; margin-bottom: 1.5rem;">
-                        <p style="font-weight: bold; margin-bottom: 1rem;">📋 需要下载的组件：</p>
-                        <ul style="margin-left: 1.5rem; line-height: 2.5;">
-                            <li>✅ Python 3.11 便携版 (~25MB)</li>
-                            <li>✅ Node.js 20.x 便携版 (~50MB)</li>
-                            <li>✅ Android SDK Platform Tools (~10MB)</li>
-                            <li>✅ Appium Settings APK (~5MB)</li>
-                            <li>✅ UIAutomator2 Server APK (~2MB)</li>
-                        </ul>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>组件</th>
+                            <th>官方下载</th>
+                            <th>国内镜像（更快）</th>
+                            <th>大小</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Python 3.11</strong></td>
+                            <td><a href="https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip" target="_blank">官方链接</a></td>
+                            <td><a href="https://registry.npmmirror.com/-/binary/python/3.11.9/python-3.11.9-embed-amd64.zip" target="_blank">淘宝镜像</a></td>
+                            <td>~25MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Node.js 20.x</strong></td>
+                            <td><a href="https://nodejs.org/dist/v20.11.1/node-v20.11.1-win-x64.zip" target="_blank">官方链接</a></td>
+                            <td><a href="https://registry.npmmirror.com/-/binary/node/v20.11.1/node-v20.11.1-win-x64.zip" target="_blank">淘宝镜像</a></td>
+                            <td>~50MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Android SDK</strong></td>
+                            <td><a href="https://dl.google.com/android/repository/platform-tools-latest-windows.zip" target="_blank">官方链接</a></td>
+                            <td>-</td>
+                            <td>~10MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Appium Settings</strong></td>
+                            <td colspan="2"><a href="https://github.com/appium/io.appium.settings/releases/download/v5.0.0/settings_apk-debug.apk" target="_blank">GitHub Release</a></td>
+                            <td>~5MB</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UIAutomator2 Server</strong></td>
+                            <td colspan="2"><a href="https://github.com/appium/appium-uiautomator2-server/releases/download/v6.0.0/appium-uiautomator2-server-v6.0.0.apk" target="_blank">GitHub Release</a></td>
+                            <td>~2MB</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-                        <p style="margin-top: 1.5rem; text-align: center;">
-                            <a href="../DOWNLOAD_GUIDE.md" style="background: #3498db; color: white; padding: 0.8rem 2rem; border-radius: 30px; text-decoration: none; display: inline-block; font-weight: bold;">
-                                📖 查看详细下载清单（含国内镜像）
-                            </a>
-                        </p>
-                    </div>
+                <h4>🌐 镜像源配置（可选）：</h4>
+                <pre><code># Python pip镜像（清华大学）
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
-                    <div style="background: #e3f2fd; padding: 1.2rem; border-radius: 8px; border-left: 4px solid #3498db;">
-                        <p style="margin: 0; color: #0d47a1;"><strong>✅ 优点：</strong></p>
-                        <ul style="margin: 0.5rem 0 0 1.5rem; color: #0d47a1;">
-                            <li>可选择国内镜像源（更快）</li>
-                            <li>可断点续传大文件</li>
-                            <li>完全自主控制下载过程</li>
-                            <li>适合网络不稳定的环境</li>
-                        </ul>
-                    </div>
+# Node.js npm镜像（淘宝）
+npm config set registry https://registry.npmmirror.com</code></pre>
+
+                <div class="warning-box">
+                    <h4>📝 安装步骤：</h4>
+                    <ol>
+                        <li>下载所有组件到项目根目录的<code>downloads\</code>文件夹</li>
+                        <li>将Python解压到<code>python-portable\</code></li>
+                        <li>将Node.js解压到<code>nodejs-portable\</code></li>
+                        <li>将Android SDK解压到<code>android-sdk-tools\</code></li>
+                        <li>将2个APK文件重命名并放到项目根目录</li>
+                        <li>运行<code>scripts\一键配置.bat</code>完成配置</li>
+                    </ol>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <!-- 方式三：懒人包（预留） -->
-            <div class="download-box" style="border: 3px solid #95a5a6; background: #f8f9fa; margin-top: 3rem; opacity: 0.7;">
-                <div style="background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); color: white; padding: 1rem; border-radius: 10px 10px 0 0; margin: -2rem -2rem 2rem -2rem;">
-                    <h3 style="margin: 0; color: white;">📦 方式三：完整懒人包（制作中）</h3>
-                    <p style="margin: 0.5rem 0 0 0; opacity: 0.95; font-size: 1rem;">包含所有依赖的完整压缩包，解压即用</p>
-                </div>
+    <!-- 安装教程 -->
+    <section id="install">
+        <div class="container">
+            <h2>📥 完整安装教程</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">从零开始，手把手教你安装所有环境</p>
 
-                <div style="background: #fff3cd; padding: 1.5rem; border-radius: 10px; border-left: 4px solid #ffc107; text-align: center;">
-                    <p style="margin: 0; color: #856404; font-size: 1.1rem;">
-                        <strong>🚧 懒人包正在制作中...</strong><br>
-                        预计包含所有组件（Python + Node.js + Android SDK + Appium）<br>
-                        下载量：约1-1.5GB | 推荐新手使用
-                    </p>
-                    <p style="margin: 1rem 0 0 0; color: #856404;">
-                        当前推荐使用 <strong>方式一</strong> 或 <strong>方式二</strong> 获取项目
-                    </p>
-                </div>
+            <h3>第1步：安装Python环境</h3>
+            <div class="step">
+                <h3>下载Python</h3>
+                <p>访问Python官网：<a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a></p>
+                <p>下载Python 3.11或更高版本（推荐3.11.9）</p>
+                <p><strong>重要</strong>：安装时务必勾选"Add Python to PATH"</p>
             </div>
 
-            <div class="highlight-box" style="margin-top: 3rem; border-left-color: var(--color-danger);">
-                <h3 style="margin-bottom: 1rem; color: var(--color-danger); font-size: 1.6rem;">⚠️ 下载前请阅读</h3>
-                <p style="font-size: 1.05rem;"><strong>使用本项目即表示您已完全理解并同意：</strong></p>
-                <ul style="margin: 1.5rem 0 1.5rem 2rem; line-height: 2.2; font-size: 1.05rem;">
-                    <li>本项目仅用于技术学习和研究</li>
-                    <li>严禁用于任何商业倒票或违法行为</li>
-                    <li>使用者对自己的行为承担全部法律责任</li>
-                    <li>与项目开发者、贡献者无任何法律关系</li>
+            <div class="step">
+                <h3>验证安装</h3>
+                <p>打开命令提示符（CMD），输入：</p>
+                <pre><code>python --version</code></pre>
+                <p>应显示：<code>Python 3.11.x</code></p>
+            </div>
+
+            <h3>第2步：安装Node.js环境</h3>
+            <div class="step">
+                <h3>下载Node.js</h3>
+                <p>访问Node.js官网：<a href="https://nodejs.org/" target="_blank">https://nodejs.org/</a></p>
+                <p>下载LTS版本（推荐20.x）</p>
+                <p>运行安装程序，全部选择默认选项</p>
+            </div>
+
+            <div class="step">
+                <h3>验证安装</h3>
+                <pre><code>node --version
+npm --version</code></pre>
+            </div>
+
+            <h3>第3步：安装Android SDK</h3>
+            <div class="step">
+                <h3>下载Android SDK Platform Tools</h3>
+                <p>访问：<a href="https://developer.android.com/studio/releases/platform-tools" target="_blank">https://developer.android.com/studio/releases/platform-tools</a></p>
+                <p>下载Windows版本，解压到任意目录（如<code>C:\android-sdk\</code>）</p>
+            </div>
+
+            <div class="step">
+                <h3>配置环境变量</h3>
+                <ol>
+                    <li>右键"此电脑" → 属性 → 高级系统设置</li>
+                    <li>点击"环境变量"</li>
+                    <li>在"系统变量"中找到"Path"，点击"编辑"</li>
+                    <li>点击"新建"，添加：<code>C:\android-sdk\platform-tools</code></li>
+                    <li>确定保存</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h3>验证安装</h3>
+                <pre><code>adb version</code></pre>
+                <p>应显示ADB版本信息</p>
+            </div>
+
+            <h3>第4步：安装Appium</h3>
+            <div class="step">
+                <h3>全局安装Appium</h3>
+                <pre><code>npm install -g appium</code></pre>
+                <p>等待安装完成（约2-5分钟）</p>
+            </div>
+
+            <div class="step">
+                <h3>安装UiAutomator2驱动</h3>
+                <pre><code>appium driver install uiautomator2</code></pre>
+            </div>
+
+            <div class="step">
+                <h3>验证安装</h3>
+                <pre><code>appium --version
+appium driver list</code></pre>
+                <p>应显示UiAutomator2驱动已安装</p>
+            </div>
+
+            <h3>第5步：下载和配置项目</h3>
+            <div class="step">
+                <h3>克隆项目</h3>
+                <pre><code>git clone https://github.com/kk43994/damai-jiaoben.git
+cd damai-jiaoben</code></pre>
+            </div>
+
+            <div class="step">
+                <h3>安装Python依赖</h3>
+                <pre><code>pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
+                <p>等待安装完成（约5-10分钟，取决于网速）</p>
+            </div>
+
+            <div class="step">
+                <h3>配置项目</h3>
+                <ol>
+                    <li>复制<code>damai_appium/config.jsonc.example</code>为<code>config.jsonc</code></li>
+                    <li>编辑<code>config.jsonc</code>，修改红手指ADB端口等配置</li>
+                </ol>
+            </div>
+
+            <h3>第6步：配置红手指云手机</h3>
+            <div class="step">
+                <h3>注册红手指账号</h3>
+                <p>访问：<a href="https://www.redfinger.com/" target="_blank">https://www.redfinger.com/</a></p>
+                <p>注册账号并创建一个云手机</p>
+            </div>
+
+            <div class="step">
+                <h3>获取ADB端口</h3>
+                <ol>
+                    <li>登录红手指控制台</li>
+                    <li>点击你的云手机 → 查看详情</li>
+                    <li>找到"ADB连接"或"调试信息"</li>
+                    <li>记下ADB端口号（通常是5位数字）</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h3>连接设备</h3>
+                <p>双击运行：<code>scripts\红手指配置.bat</code></p>
+                <p>输入ADB端口号，脚本会自动连接设备并安装必需的APK</p>
+            </div>
+
+            <h3>第7步：首次运行</h3>
+            <div class="step">
+                <h3>启动Appium服务器</h3>
+                <pre><code>appium --address 127.0.0.1 --port 4723 --allow-cors</code></pre>
+                <p>或者双击运行：<code>scripts\一键启动.bat</code></p>
+            </div>
+
+            <div class="step">
+                <h3>启动GUI程序</h3>
+                <p>如果使用一键启动脚本，GUI会自动打开</p>
+                <p>或者手动运行：<code>python damai_smart_ai.py</code></p>
+            </div>
+
+            <div class="step">
+                <h3>测试连接</h3>
+                <p>在GUI中点击"连接设备"按钮，查看是否成功连接</p>
+                <p>如果连接失败，使用"🏥 连接急救箱"功能诊断问题</p>
+            </div>
+
+            <div class="success-box">
+                <h3>✅ 安装完成！</h3>
+                <p>所有环境已配置完成，现在可以开始使用了。继续阅读<a href="#usage">使用教程</a>了解详细操作。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 使用教程 -->
+    <section id="usage">
+        <div class="container">
+            <h2>🖥️ GUI使用教程</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">详细讲解GUI界面的每个功能</p>
+
+            <h3>1. GUI界面概览</h3>
+            <div class="highlight-box">
+                <pre>╔══════════════════════════════════════════════════════╗
+║            大麦自动化抢票系统 v2.2                       ║
+║                                                        ║
+║  [连接设备] [🏥 连接急救箱] [🖼️ 截图监控]                 ║
+║                                                        ║
+║  演出信息配置                                           ║
+║  ┌────────────────────────────────────────┐          ║
+║  │ 关键词: [周杰伦演唱会      ]              │          ║
+║  │ 城市:   [北京              ]              │          ║
+║  │ 场次:   [11月17日 19:30    ]              │          ║
+║  │ 票档:   [看台区 680元       ]              │          ║
+║  └────────────────────────────────────────┘          ║
+║                                                        ║
+║  功能选项                                              ║
+║  [✓] 启用快速抢票 [✓] 实时监控 [✓] 自动重试             ║
+║                                                        ║
+║  [开始抢票] [停止流程] [查看日志]                        ║
+║                                                        ║
+║  日志输出区域                                           ║
+║  ┌────────────────────────────────────────┐          ║
+║  │ [INFO] 程序启动...                        │          ║
+║  │ [SUCCESS] 设备连接成功                    │          ║
+║  │ [INFO] 开始搜索演出...                     │          ║
+║  └────────────────────────────────────────┘          ║
+╚══════════════════════════════════════════════════════╝</pre>
+            </div>
+
+            <h3>2. 设备连接</h3>
+            <div class="step">
+                <h3>点击"连接设备"按钮</h3>
+                <p>GUI会自动读取配置文件中的ADB端口，尝试连接红手指云手机</p>
+                <p><strong>成功提示</strong>：日志显示绿色"[SUCCESS] 设备连接成功"</p>
+                <p><strong>失败处理</strong>：点击"🏥 连接急救箱"诊断并修复连接问题</p>
+            </div>
+
+            <h3>3. 配置演出信息</h3>
+            <div class="step">
+                <h3>填写关键词</h3>
+                <p>输入演出名称，例如："周杰伦演唱会"、"张学友"、"话剧"</p>
+                <p><strong>建议</strong>：使用精确的演出名称，避免搜索到不相关的结果</p>
+            </div>
+
+            <div class="step">
+                <h3>选择目标城市</h3>
+                <p>输入城市名称，例如："北京"、"上海"、"深圳"</p>
+                <p><strong>注意</strong>：必须是完整的城市名称</p>
+            </div>
+
+            <div class="step">
+                <h3>指定场次（可选）</h3>
+                <p>输入场次日期和时间，例如："11月17日 19:30"</p>
+                <p><strong>留空</strong>：如果留空，系统会自动选择第一个可用场次</p>
+            </div>
+
+            <div class="step">
+                <h3>选择票档（可选）</h3>
+                <p>输入票档描述，例如："看台区 680元"、"VIP 1280元"</p>
+                <p><strong>留空</strong>：如果留空，系统会自动选择第一个可用票档</p>
+            </div>
+
+            <h3>4. 功能选项</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>选项</th>
+                        <th>说明</th>
+                        <th>推荐设置</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>启用快速抢票</strong></td>
+                        <td>跳过某些非必要步骤，提高抢票速度</td>
+                        <td>热门票务：✓ 勾选<br>普通票务：可不勾选</td>
+                    </tr>
+                    <tr>
+                        <td><strong>实时监控</strong></td>
+                        <td>每步都截图并显示在监控窗口</td>
+                        <td>✓ 推荐勾选（方便观察）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>自动重试</strong></td>
+                        <td>遇到错误时自动重试</td>
+                        <td>✓ 推荐勾选</td>
+                    </tr>
+                    <tr>
+                        <td><strong>优先购买</strong></td>
+                        <td>开启优先购买权（需要会员）</td>
+                        <td>如有会员权益可勾选</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>5. 开始抢票</h3>
+            <div class="step">
+                <h3>点击"开始抢票"按钮</h3>
+                <p>系统会自动执行以下步骤：</p>
+                <ol>
+                    <li>打开大麦App</li>
+                    <li>搜索演出</li>
+                    <li>选择城市</li>
+                    <li>进入详情页</li>
+                    <li>选择场次</li>
+                    <li>选择票档</li>
+                    <li>点击"立即购买"</li>
+                    <li>选择观演人</li>
+                    <li>点击"提交订单"</li>
+                    <li>等待支付页面</li>
+                </ol>
+            </div>
+
+            <div class="step">
+                <h3>观察日志输出</h3>
+                <p><strong>黑色</strong>：普通信息（[INFO]）</p>
+                <p><strong>绿色</strong>：成功操作（[SUCCESS]）</p>
+                <p><strong>黄色</strong>：警告信息（[WARNING]）</p>
+                <p><strong>红色</strong>：错误信息（[ERROR]）</p>
+            </div>
+
+            <div class="step">
+                <h3>查看截图监控</h3>
+                <p>如果勾选了"实时监控"，会弹出窗口显示每步的截图</p>
+                <p>可以实时看到App的当前画面</p>
+            </div>
+
+            <h3>6. 高级功能</h3>
+            <div class="step">
+                <h3>🏥 连接急救箱</h3>
+                <p>当设备连接失败时使用，提供以下功能：</p>
+                <ul>
+                    <li>自动诊断连接问题</li>
+                    <li>一键重新连接设备</li>
+                    <li>安装必需的APK文件</li>
+                    <li>修复WebDriver连接</li>
                 </ul>
-                <p style="text-align: center; margin-top: 1.5rem;">
-                    <a href="../LEGAL_NOTICE.md" target="_blank" style="color: var(--color-danger); font-weight: bold; font-size: 1.1rem; text-decoration: underline;">点击阅读完整法律声明 →</a>
+            </div>
+
+            <div class="step">
+                <h3>🖼️ 截图监控</h3>
+                <p>独立打开截图监控窗口，实时显示设备屏幕</p>
+                <p>可以在不开始抢票的情况下查看设备状态</p>
+            </div>
+
+            <div class="step">
+                <h3>停止流程</h3>
+                <p>点击"停止流程"可以随时中止抢票流程</p>
+                <p>程序会安全退出，不会留下残留进程</p>
+            </div>
+
+            <h3>7. 常见使用场景</h3>
+            <div class="highlight-box">
+                <h4>场景1：正常抢票（非热门票）</h4>
+                <ol>
+                    <li>连接设备</li>
+                    <li>填写演出信息（关键词、城市）</li>
+                    <li>不勾选"快速抢票"</li>
+                    <li>勾选"实时监控"和"自动重试"</li>
+                    <li>点击"开始抢票"</li>
+                    <li>观察日志和截图</li>
+                    <li>等待到达支付页面，手动完成支付</li>
+                </ol>
+            </div>
+
+            <div class="highlight-box">
+                <h4>场景2：热门票（抢手演唱会）</h4>
+                <ol>
+                    <li>提前10分钟连接设备并测试</li>
+                    <li>精确填写所有信息（城市、场次、票档）</li>
+                    <li><strong>勾选"快速抢票"</strong></li>
+                    <li>勾选"自动重试"</li>
+                    <li>开票时间前30秒点击"开始抢票"</li>
+                    <li>程序会以最快速度执行流程</li>
+                </ol>
+            </div>
+
+            <div class="highlight-box">
+                <h4>场景3：测试流程</h4>
+                <ol>
+                    <li>连接设备</li>
+                    <li>搜索一个不抢手的演出</li>
+                    <li>勾选"实时监控"</li>
+                    <li>开始抢票，观察每一步的执行</li>
+                    <li>确认流程正常后，用于实际抢票</li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
+    <!-- 配置说明 -->
+    <section id="config">
+        <div class="container">
+            <h2>⚙️ 配置文件说明</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem;">详细解释config.jsonc的每个参数</p>
+
+            <h3>配置文件位置</h3>
+            <pre><code>damai_appium/config.jsonc</code></pre>
+
+            <h3>完整配置示例</h3>
+            <pre><code>{
+  // ========== 设备配置 ==========
+  "adb_port": "12345",              // 红手指ADB端口号（必填）
+  "device_name": "Android",         // 设备名称（通常保持默认）
+  "platform_version": "9",          // Android版本（通常保持默认）
+
+  // ========== Appium服务器配置 ==========
+  "appium_server": "http://127.0.0.1:4723",  // Appium服务器地址
+
+  // ========== 演出信息配置 ==========
+  "keyword": "周杰伦演唱会",          // 搜索关键词（必填）
+  "target_city": "北京",             // 目标城市（必填）
+  "target_session": "11月17日 19:30", // 目标场次（可选，留空则自动选择）
+  "target_tier": "看台区 680元",      // 目标票档（可选，留空则自动选择）
+
+  // ========== 抢票策略配置 ==========
+  "enable_fast_grab": true,         // 是否启用快速抢票模式
+  "fast_grab_speed": 10,            // 快速抢票速度（1-20，数值越大越快）
+  "auto_retry": true,               // 是否自动重试
+  "max_retry": 3,                   // 最大重试次数
+
+  // ========== 等待时间配置 ==========
+  "default_wait_time": 5,           // 默认等待时间（秒）
+  "page_load_wait": 10,             // 页面加载等待时间（秒）
+  "element_wait": 5,                // 元素查找等待时间（秒）
+
+  // ========== 高级选项 ==========
+  "enable_ocr": true,               // 是否启用OCR识别
+  "screenshot_monitor": true,       // 是否启用截图监控
+  "save_screenshots": true,         // 是否保存截图
+  "debug_mode": false,              // 是否启用调试模式
+
+  // ========== WebDriver健康监控 ==========
+  "enable_health_check": true,      // 是否启用WebDriver健康检查
+  "health_check_interval": 5,       // 健康检查间隔（秒）
+  "auto_recover": true              // 是否自动恢复连接
+}</code></pre>
+
+            <h3>关键参数说明</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>参数名</th>
+                        <th>说明</th>
+                        <th>示例值</th>
+                        <th>是否必填</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>adb_port</code></td>
+                        <td>红手指云手机的ADB端口号</td>
+                        <td>"12345"</td>
+                        <td>✅ 必填</td>
+                    </tr>
+                    <tr>
+                        <td><code>keyword</code></td>
+                        <td>演出搜索关键词</td>
+                        <td>"周杰伦演唱会"</td>
+                        <td>✅ 必填</td>
+                    </tr>
+                    <tr>
+                        <td><code>target_city</code></td>
+                        <td>目标城市</td>
+                        <td>"北京"</td>
+                        <td>✅ 必填</td>
+                    </tr>
+                    <tr>
+                        <td><code>target_session</code></td>
+                        <td>目标场次（精确匹配）</td>
+                        <td>"11月17日 19:30"</td>
+                        <td>❌ 可选</td>
+                    </tr>
+                    <tr>
+                        <td><code>target_tier</code></td>
+                        <td>目标票档（精确匹配）</td>
+                        <td>"看台区 680元"</td>
+                        <td>❌ 可选</td>
+                    </tr>
+                    <tr>
+                        <td><code>enable_fast_grab</code></td>
+                        <td>是否启用快速抢票</td>
+                        <td>true / false</td>
+                        <td>❌ 可选</td>
+                    </tr>
+                    <tr>
+                        <td><code>screenshot_monitor</code></td>
+                        <td>是否显示截图监控窗口</td>
+                        <td>true / false</td>
+                        <td>❌ 可选</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="warning-box">
+                <h4>⚠️ 配置注意事项</h4>
+                <ul>
+                    <li><strong>JSON格式</strong>：配置文件使用JSONC格式，支持注释（//）</li>
+                    <li><strong>字符串值</strong>：所有字符串必须用双引号括起来</li>
+                    <li><strong>布尔值</strong>：true/false不需要引号</li>
+                    <li><strong>数字</strong>：数字值不需要引号</li>
+                    <li><strong>中文支持</strong>：配置文件支持中文，确保保存为UTF-8编码</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq">
+        <div class="container">
+            <h2>❓ 常见问题</h2>
+
+            <div class="faq-item">
+                <h3>Q1: 提示"adb不是内部或外部命令"怎么办？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：Android SDK未安装或环境变量未配置</p>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>确认已安装Android SDK Platform Tools</li>
+                    <li>配置环境变量PATH，添加<code>platform-tools</code>目录</li>
+                    <li>重新打开命令提示符测试</li>
+                    <li>如果使用一键启动脚本，确保通过脚本启动</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q2: 连接设备失败，显示"device offline"？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：红手指云手机未开启或ADB端口错误</p>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>确认红手指云手机已开启</li>
+                    <li>检查ADB端口号是否正确</li>
+                    <li>使用"连接急救箱"功能自动诊断</li>
+                    <li>手动执行：<code>adb disconnect</code>后重新连接</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q3: Appium启动失败，提示端口被占用？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：4723端口已被其他程序占用</p>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>关闭所有Appium实例</li>
+                    <li>运行：<code>taskkill /F /IM node.exe /T</code>（Windows）</li>
+                    <li>重新启动Appium</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q4: pip install失败，提示网络超时？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：网络问题或pypi.org被限速</p>
+                <p><strong>解决方法</strong>：</p>
+                <pre><code># 使用国内镜像源
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 或者配置永久镜像源
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple</code></pre>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q5: 运行中途卡住不动了？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>可能原因</strong>：</p>
+                <ul>
+                    <li>WebDriver连接中断</li>
+                    <li>页面加载超时</li>
+                    <li>App界面发生变化</li>
+                </ul>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>查看日志输出，确认卡在哪一步</li>
+                    <li>点击"停止流程"</li>
+                    <li>使用"连接急救箱"修复连接</li>
+                    <li>重新开始抢票</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q6: 搜索不到演出？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：关键词不准确或演出未上线</p>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>确认关键词与大麦App中的演出名称一致</li>
+                    <li>尝试使用简短的关键词（如艺人名字）</li>
+                    <li>检查演出是否已在大麦App上线</li>
+                    <li>手动在App中搜索，确认演出存在</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q7: 提示"找不到指定城市"？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：城市名称不匹配或演出不在该城市</p>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>确认城市名称完全匹配（如"北京"不能写成"北京市"）</li>
+                    <li>检查该演出是否在目标城市有场次</li>
+                    <li>先手动搜索确认城市列表</li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q8: PaddleOCR识别失败？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>原因</strong>：模型未正确安装或设备分辨率不支持</p>
+                <p><strong>解决方法</strong>：</p>
+                <ol>
+                    <li>确认已安装<code>paddleocr</code>和<code>paddlepaddle</code></li>
+                    <li>首次运行会自动下载模型，需要耐心等待</li>
+                    <li>检查设备截图是否清晰</li>
+                    <li>必要时在<code>config.jsonc</code>中设置<code>"enable_ocr": false</code></li>
+                </ol>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q9: 使用本项目是否违法？</h3>
+                <p><strong>A:</strong></p>
+                <p><strong>技术本身是中立的</strong>，关键看如何使用：</p>
+                <ul>
+                    <li>✅ <strong>合法</strong>：学习Python、Appium技术</li>
+                    <li>✅ <strong>合法</strong>：个人研究自动化</li>
+                    <li>✅ <strong>合法</strong>：学术研究、教学演示</li>
+                    <li>❌ <strong>违法</strong>：商业倒票牟利（刑法第225条）</li>
+                    <li>❌ <strong>违法</strong>：破坏平台秩序（刑法第286条）</li>
+                    <li>❌ <strong>违法</strong>：侵犯他人权益</li>
+                </ul>
+                <p><strong>使用者需对自己的行为负全部法律责任。</strong></p>
+                <p>详细请阅读<a href="#legal">完整法律声明</a>。</p>
+            </div>
+
+            <div class="faq-item">
+                <h3>Q10: 抢到票后如何支付？</h3>
+                <p><strong>A:</strong></p>
+                <p>程序会自动执行到支付页面，<strong>但不会自动支付</strong>。</p>
+                <p>到达支付页面后，你需要：</p>
+                <ol>
+                    <li>在红手指云手机中手动选择支付方式</li>
+                    <li>完成支付（支付宝/微信/银联等）</li>
+                    <li>确认订单</li>
+                </ol>
+                <p><strong>注意</strong>：请在15分钟内完成支付，否则订单会自动取消。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 法律声明 -->
+    <section id="legal">
+        <div class="container">
+            <h2 style="color: var(--color-danger);">⚖️ 完整法律声明</h2>
+            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 3rem; color: var(--color-danger); font-weight: bold;">使用本项目前请务必完整阅读并理解本声明</p>
+
+            <div class="danger-box">
+                <h3>📌 项目性质</h3>
+                <p>本项目是一个<strong>开源技术学习项目</strong>，旨在演示和教学：</p>
+                <ul>
+                    <li>✅ <strong>移动端自动化测试技术</strong>（基于Appium框架）</li>
+                    <li>✅ <strong>Python自动化编程技术</strong></li>
+                    <li>✅ <strong>OCR文字识别技术应用</strong></li>
+                    <li>✅ <strong>自动化决策流程设计</strong></li>
+                </ul>
+                <p style="margin-top: 1.5rem;"><strong>本项目不是、也从未声称是商业抢票工具。</strong></p>
+            </div>
+
+            <h3>✅ 允许的使用场景</h3>
+            <div class="success-box">
+                <ol>
+                    <li><strong>个人学习</strong>：学习Python自动化编程技术</li>
+                    <li><strong>技术研究</strong>：研究Appium移动端自动化框架</li>
+                    <li><strong>教学演示</strong>：在课堂、培训中演示自动化技术</li>
+                    <li><strong>学术交流</strong>：在学术会议、论文中引用和讨论</li>
+                    <li><strong>技术竞赛</strong>：在编程竞赛、hackathon中使用</li>
+                    <li><strong>课程作业</strong>：作为软件测试、Python编程课程的作业</li>
+                    <li><strong>开源贡献</strong>：改进代码、提交PR、参与开发</li>
+                </ol>
+            </div>
+
+            <h3>❌ 严格禁止的行为</h3>
+            <div class="danger-box">
+                <ol>
+                    <li><strong>倒卖门票牟利</strong>
+                        <ul>
+                            <li>使用本项目批量抢购门票并高价转卖</li>
+                            <li>为他人代抢门票并收取费用</li>
+                            <li>通过本项目进行任何形式的商业倒票活动</li>
+                            <li><strong>法律后果</strong>：违反《中华人民共和国刑法》第225条"非法经营罪"，可处五年以下有期徒刑或者拘役</li>
+                        </ul>
+                    </li>
+                    <li><strong>破坏平台秩序</strong>
+                        <ul>
+                            <li>恶意批量抢票导致普通用户无法购买</li>
+                            <li>使用本项目进行DDoS攻击或其他破坏行为</li>
+                            <li>干扰票务平台的正常运营</li>
+                            <li><strong>法律后果</strong>：违反《中华人民共和国刑法》第286条"破坏计算机信息系统罪"，可处五年以下有期徒刑或者拘役</li>
+                        </ul>
+                    </li>
+                    <li><strong>侵犯他人权益</strong>
+                        <ul>
+                            <li>侵犯其他用户的公平购票权利</li>
+                            <li>侵犯票务平台的商业利益</li>
+                            <li>侵犯演出主办方的合法权益</li>
+                        </ul>
+                    </li>
+                    <li><strong>违反平台规定</strong>
+                        <ul>
+                            <li>违反大麦等票务平台的用户协议和服务条款</li>
+                            <li>绕过平台的反作弊机制</li>
+                            <li>滥用平台资源</li>
+                        </ul>
+                    </li>
+                    <li><strong>其他违法行为</strong>
+                        <ul>
+                            <li>未经授权的自动化访问</li>
+                            <li>数据爬取和滥用</li>
+                            <li>其他违反法律法规的行为</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <h3>⚠️ 法律风险提示</h3>
+            <div class="warning-box">
+                <h4>相关法律法规：</h4>
+                <ul>
+                    <li><strong>刑法第225条</strong>（非法经营罪）：
+                        <blockquote style="margin: 1rem 0; padding-left: 1rem; border-left: 3px solid #856404;">
+                        "违反国家规定...扰乱市场秩序，情节严重的，处五年以下有期徒刑或者拘役，并处或者单处违法所得一倍以上五倍以下罚金..."
+                        </blockquote>
+                    </li>
+                    <li><strong>刑法第286条</strong>（破坏计算机信息系统罪）：
+                        <blockquote style="margin: 1rem 0; padding-left: 1rem; border-left: 3px solid #856404;">
+                        "违反国家规定，对计算机信息系统功能进行删除、修改、增加、干扰，造成计算机信息系统不能正常运行，后果严重的，处五年以下有期徒刑或者拘役..."
+                        </blockquote>
+                    </li>
+                </ul>
+
+                <h4 style="margin-top: 2rem;">真实案例：</h4>
+                <ul>
+                    <li>2019年，某抢票软件开发者因批量抢票并倒卖被判刑</li>
+                    <li>2020年，多名使用抢票软件倒卖演唱会门票的黄牛被抓</li>
+                    <li>2021年，某团队开发抢票软件并收费，被以非法经营罪起诉</li>
+                </ul>
+            </div>
+
+            <h3>🔒 免责声明</h3>
+            <div class="highlight-box">
+                <ol>
+                    <li><strong>技术中立性</strong>：本项目提供的技术是中立的，技术本身不具有违法性。</li>
+                    <li><strong>使用者责任</strong>：
+                        <ul>
+                            <li>使用者对自己使用本项目的行为承担<strong>全部法律责任</strong></li>
+                            <li>使用者应当遵守所在地的法律法规和相关平台的服务条款</li>
+                            <li>使用者因违法使用本项目导致的一切后果（包括但不限于民事赔偿、行政处罚、刑事责任）由使用者本人承担</li>
+                        </ul>
+                    </li>
+                    <li><strong>开发者免责</strong>：
+                        <ul>
+                            <li>项目开发者、贡献者不对使用者的任何违法行为承担责任</li>
+                            <li>项目开发者、贡献者不对使用本项目造成的任何损失承担责任</li>
+                            <li>项目开发者、贡献者与使用者的违法行为无任何法律关系</li>
+                        </ul>
+                    </li>
+                    <li><strong>无担保声明</strong>：
+                        <ul>
+                            <li>本项目按"现状"提供，不提供任何明示或暗示的担保</li>
+                            <li>不保证本项目的功能能够满足使用者的需求</li>
+                            <li>不保证本项目的运行不会中断或不存在错误</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+
+            <h3>📞 联系与投诉</h3>
+            <div class="highlight-box">
+                <p><strong>如果您发现有人使用本项目从事违法活动：</strong></p>
+                <ul>
+                    <li>📧 邮件：在GitHub仓库Issues中举报</li>
+                    <li>🚨 报警：向公安机关报案</li>
+                    <li>⚖️ 起诉：通过法律途径维权</li>
+                </ul>
+                <p style="margin-top: 1.5rem;"><strong>如果您对本项目有任何疑问或建议：</strong></p>
+                <ul>
+                    <li>💬 GitHub Issues: <a href="https://github.com/kk43994/damai-jiaoben/issues" target="_blank">https://github.com/kk43994/damai-jiaoben/issues</a></li>
+                    <li>📖 项目文档: <a href="https://github.com/kk43994/damai-jiaoben" target="_blank">https://github.com/kk43994/damai-jiaoben</a></li>
+                </ul>
+            </div>
+
+            <h3>📜 最终声明</h3>
+            <div class="danger-box">
+                <p style="font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 1.5rem;">
+                    使用本项目即表示您已<strong>完全理解并同意</strong>本法律声明的全部内容
+                </p>
+                <ul style="font-size: 1.05rem; line-height: 2.5;">
+                    <li>✅ 我已完整阅读并理解上述法律声明的全部内容</li>
+                    <li>✅ 我承诺仅将本项目用于技术学习和研究</li>
+                    <li>❌ 我承诺不将本项目用于商业倒票、恶意抢票等违法行为</li>
+                    <li>⚖️ 我理解违法使用本项目的一切后果由我本人承担</li>
+                    <li>🔒 我理解项目开发者、贡献者与我的违法行为无任何法律关系</li>
+                </ul>
+                <p style="margin-top: 2rem; text-align: center; font-size: 1.1rem; font-weight: bold;">
+                    如果您不同意本声明的任何内容，请立即停止下载和使用本项目！
                 </p>
             </div>
         </div>
@@ -1057,117 +1467,39 @@
         <div class="container">
             <h3 style="margin-bottom: 1.5rem;">📚 相关链接</h3>
             <p style="margin-bottom: 2rem; font-size: 1.1rem;">
-                <a href="https://github.com/yourusername/mobile-automation-demo" target="_blank">GitHub仓库</a> |
-                <a href="../LEGAL_NOTICE.md" target="_blank">法律声明</a> |
-                <a href="../README.md">项目文档</a> |
-                <a href="https://github.com/yourusername/mobile-automation-demo/issues" target="_blank">问题反馈</a>
+                <a href="https://github.com/kk43994/damai-jiaoben" target="_blank">GitHub仓库</a> |
+                <a href="#legal">法律声明</a> |
+                <a href="#faq">常见问题</a> |
+                <a href="https://github.com/kk43994/damai-jiaoben/issues" target="_blank">问题反馈</a>
             </p>
 
             <div class="divider">
                 <p style="opacity: 0.9; line-height: 2;">本项目遵循开源协议发布，仅供技术学习和研究使用</p>
                 <p style="margin-top: 0.5rem; opacity: 0.9; color: var(--color-warning); font-weight: 600;">⚠️ 严禁用于商业倒票、破坏平台秩序等违法行为 | 违法使用后果自负</p>
-                <p style="margin-top: 1.5rem; opacity: 0.7; font-size: 0.95rem;">© 2025 Mobile Automation Demo. All rights reserved.</p>
+                <p style="margin-top: 1.5rem; opacity: 0.7; font-size: 0.95rem;">© 2025 Mobile Automation Demo Project. For Educational Purposes Only.</p>
             </div>
         </div>
     </footer>
 
-    <!-- 下载协议确认模态框 -->
-    <div id="downloadAgreementModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10000; overflow-y: auto;">
-        <div style="max-width: 800px; margin: 50px auto; background: white; border-radius: 15px; padding: 40px; position: relative;">
-            <!-- 关闭按钮 -->
-            <button onclick="closeAgreementModal()" style="position: absolute; top: 20px; right: 20px; background: #ccc; border: none; border-radius: 50%; width: 40px; height: 40px; font-size: 24px; cursor: pointer; line-height: 1;">×</button>
-
-            <!-- 标题 -->
-            <h2 style="color: #d63031; text-align: center; margin-bottom: 30px; font-size: 2rem;">⚖️ 下载前请阅读并同意</h2>
-
-            <!-- 协议内容 -->
-            <div style="background: #f5f5f5; padding: 25px; border-radius: 10px; max-height: 400px; overflow-y: auto; margin-bottom: 30px; border: 2px solid #ddd;">
-                <h3 style="color: #000; margin-bottom: 15px;">📋 法律声明与免责条款</h3>
-
-                <h4 style="margin-top: 20px; color: #333;">项目性质</h4>
-                <p style="line-height: 1.8; color: #555;">
-                    本项目是一个<strong>开源技术学习项目</strong>，旨在演示移动端自动化测试技术、Python自动化编程、OCR文字识别等技术。
-                    项目以大麦App作为<strong>测试案例</strong>进行演示。
-                </p>
-
-                <h4 style="margin-top: 20px; color: #27ae60;">✅ 允许的用途</h4>
-                <ul style="margin-left: 20px; line-height: 2; color: #555;">
-                    <li>个人学习Python自动化技术</li>
-                    <li>研究Appium移动端自动化</li>
-                    <li>教学演示和学术交流</li>
-                    <li>技术竞赛、课程作业</li>
-                </ul>
-
-                <h4 style="margin-top: 20px; color: #d63031;">❌ 严格禁止的行为</h4>
-                <ul style="margin-left: 20px; line-height: 2; color: #555;">
-                    <li><strong>商业倒票、恶意抢票</strong></li>
-                    <li><strong>破坏平台公平秩序</strong></li>
-                    <li><strong>违反相关法律法规</strong></li>
-                    <li><strong>侵犯他人合法权益</strong></li>
-                </ul>
-
-                <h4 style="margin-top: 20px; color: #d63031;">⚠️ 法律风险提示</h4>
-                <p style="line-height: 1.8; color: #555;">
-                    根据《中华人民共和国刑法》：<br>
-                    - <strong>第225条</strong>（非法经营罪）：倒卖门票牟利可处5年以下有期徒刑<br>
-                    - <strong>第286条</strong>（破坏计算机信息系统罪）：破坏系统运行可处5年以下有期徒刑
-                </p>
-
-                <h4 style="margin-top: 20px; color: #000;">📌 使用者责任</h4>
-                <p style="line-height: 1.8; color: #555;">
-                    使用本项目即表示您已完全理解并同意：<br>
-                    1. 本项目仅用于技术学习和研究<br>
-                    2. 严禁用于任何商业倒票或违法行为<br>
-                    3. <strong>使用者对自己的行为承担全部法律责任</strong><br>
-                    4. 与项目开发者、贡献者无任何法律关系
-                </p>
-            </div>
-
-            <!-- 确认选项 -->
-            <div style="margin-bottom: 30px;">
-                <label style="display: block; margin-bottom: 15px; font-size: 1.1rem; cursor: pointer;">
-                    <input type="checkbox" id="agree1" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 10px;">
-                    <span style="vertical-align: middle;">✅ 我已<strong>完整阅读并理解</strong>上述法律声明的全部内容</span>
-                </label>
-
-                <label style="display: block; margin-bottom: 15px; font-size: 1.1rem; cursor: pointer;">
-                    <input type="checkbox" id="agree2" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 10px;">
-                    <span style="vertical-align: middle;">✅ 我承诺<strong>仅将本项目用于技术学习和研究</strong></span>
-                </label>
-
-                <label style="display: block; margin-bottom: 15px; font-size: 1.1rem; cursor: pointer;">
-                    <input type="checkbox" id="agree3" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 10px;">
-                    <span style="vertical-align: middle;">❌ 我承诺<strong>不将本项目用于商业倒票、恶意抢票等违法行为</strong></span>
-                </label>
-
-                <label style="display: block; margin-bottom: 15px; font-size: 1.1rem; cursor: pointer;">
-                    <input type="checkbox" id="agree4" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 10px;">
-                    <span style="vertical-align: middle;">⚖️ 我理解<strong>违法使用本项目的一切后果由我本人承担</strong></span>
-                </label>
-            </div>
-
-            <!-- 按钮区域 -->
-            <div style="text-align: center;">
-                <button id="downloadBtn" disabled onclick="proceedDownload()" style="background: #ccc; color: #666; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.2rem; cursor: not-allowed; margin-right: 20px; transition: all 0.3s;">
-                    🚫 请勾选所有确认项
-                </button>
-                <button onclick="closeAgreementModal()" style="background: #666; color: white; padding: 15px 40px; border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer;">
-                    取消
-                </button>
-            </div>
-
-            <p style="text-align: center; margin-top: 20px; color: #999; font-size: 0.9rem;">
-                点击"同意并下载"即表示您已完全理解并同意上述所有条款
-            </p>
-        </div>
-    </div>
-
-    <!-- 滚动动画脚本（可选） -->
     <script>
-        // ===== 滚动动画 =====
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 滚动动画
         const observerOptions = {
             threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
+            rootMargin: '0px 0px -50px 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
@@ -1179,91 +1511,8 @@
             });
         }, observerOptions);
 
-        // 观察所有section
         document.querySelectorAll('section').forEach(section => {
             observer.observe(section);
-        });
-
-        // ===== 下载协议确认机制 =====
-
-        // 显示协议模态框
-        function showAgreementModal(e) {
-            e.preventDefault(); // 阻止默认下载行为
-            document.getElementById('downloadAgreementModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // 禁止背景滚动
-        }
-
-        // 关闭协议模态框
-        function closeAgreementModal() {
-            document.getElementById('downloadAgreementModal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // 恢复滚动
-            // 重置所有复选框
-            document.getElementById('agree1').checked = false;
-            document.getElementById('agree2').checked = false;
-            document.getElementById('agree3').checked = false;
-            document.getElementById('agree4').checked = false;
-            updateDownloadButton(); // 更新按钮状态
-        }
-
-        // 检查所有复选框并更新下载按钮状态
-        function updateDownloadButton() {
-            const agree1 = document.getElementById('agree1').checked;
-            const agree2 = document.getElementById('agree2').checked;
-            const agree3 = document.getElementById('agree3').checked;
-            const agree4 = document.getElementById('agree4').checked;
-            const downloadBtn = document.getElementById('downloadBtn');
-
-            if (agree1 && agree2 && agree3 && agree4) {
-                // 全部勾选，启用下载按钮
-                downloadBtn.disabled = false;
-                downloadBtn.style.background = 'linear-gradient(135deg, #27ae60 0%, #229954 100%)';
-                downloadBtn.style.color = 'white';
-                downloadBtn.style.cursor = 'pointer';
-                downloadBtn.textContent = '✅ 我同意，开始下载';
-            } else {
-                // 未全部勾选，禁用按钮
-                downloadBtn.disabled = true;
-                downloadBtn.style.background = '#ccc';
-                downloadBtn.style.color = '#666';
-                downloadBtn.style.cursor = 'not-allowed';
-                downloadBtn.textContent = '🚫 请勾选所有确认项';
-            }
-        }
-
-        // 真正开始下载
-        function proceedDownload() {
-            // 记录用户同意时间（可选）
-            const timestamp = new Date().toISOString();
-            console.log('用户同意下载协议:', timestamp);
-
-            // 关闭模态框
-            closeAgreementModal();
-
-            // 开始下载（这里替换为实际的下载链接）
-            const downloadUrl = '#'; // TODO: 替换为实际的懒人包下载链接
-            if (downloadUrl !== '#') {
-                window.location.href = downloadUrl;
-            } else {
-                alert('下载链接尚未配置，请联系项目维护者');
-            }
-        }
-
-        // 页面加载完成后绑定事件
-        document.addEventListener('DOMContentLoaded', function() {
-            // 监听所有复选框的变化
-            document.getElementById('agree1').addEventListener('change', updateDownloadButton);
-            document.getElementById('agree2').addEventListener('change', updateDownloadButton);
-            document.getElementById('agree3').addEventListener('change', updateDownloadButton);
-            document.getElementById('agree4').addEventListener('change', updateDownloadButton);
-
-            // 为所有下载按钮添加点击事件（显示协议）
-            const downloadButtons = document.querySelectorAll('a[href="#"][class*="btn-primary"]');
-            downloadButtons.forEach(btn => {
-                btn.addEventListener('click', showAgreementModal);
-            });
-
-            // 也可以通过ID或其他方式精确选择下载按钮
-            // 例如：document.getElementById('downloadPackageBtn').addEventListener('click', showAgreementModal);
         });
     </script>
 </body>
