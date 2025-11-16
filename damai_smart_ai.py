@@ -36,6 +36,7 @@ from damai_appium.fast_grabber import FastGrabber, GrabConfig
 from environment_checker import EnvironmentChecker, EnvironmentFixer, CheckResult
 from smart_wait import SmartWait, ParallelPopupHandler, PerformanceMonitor
 from connection_auto_fixer import ConnectionAutoFixer
+from connection_first_aid import ConnectionFirstAid
 
 # 安全的print函数 - 避免Windows GBK编码错误
 def safe_print(msg):
@@ -786,15 +787,24 @@ class SmartAIGUI:
         self.clear_zombie_btn = ttk.Button(conn_btn_frame, text="🧹 清除僵尸连接", command=self.clear_zombie_connections, width=15)
         self.clear_zombie_btn.pack(side=tk.LEFT)
 
-        # 环境诊断按钮区域
-        env_btn_frame = ttk.Frame(conn_frame)
-        env_btn_frame.grid(row=3, column=0, columnspan=4, pady=(8, 0), sticky=tk.W)
+        # 连接急救箱按钮区域（替换老的"环境诊断"和"一键修复"）
+        first_aid_frame = ttk.Frame(conn_frame)
+        first_aid_frame.grid(row=3, column=0, columnspan=4, pady=(8, 0), sticky=tk.W)
 
-        self.env_check_btn = ttk.Button(env_btn_frame, text="🔧 环境诊断", command=self.show_environment_check, width=12)
-        self.env_check_btn.pack(side=tk.LEFT, padx=(0, 5))
+        self.first_aid_btn = ttk.Button(
+            first_aid_frame,
+            text="🏥 连接急救箱",
+            command=self.run_first_aid,
+            width=25
+        )
+        self.first_aid_btn.pack(side=tk.LEFT)
 
-        self.env_fix_btn = ttk.Button(env_btn_frame, text="🔨 一键修复", command=self.auto_fix_environment, width=12)
-        self.env_fix_btn.pack(side=tk.LEFT)
+        # 保留老按钮但隐藏（兼容性）
+        self.env_check_btn = ttk.Button(first_aid_frame, text="🔧 环境诊断 (旧)", command=self.show_environment_check, width=12)
+        # self.env_check_btn.pack(side=tk.LEFT, padx=(0, 5))  # 隐藏
+
+        self.env_fix_btn = ttk.Button(first_aid_frame, text="🔨 一键修复 (旧)", command=self.auto_fix_environment, width=12)
+        # self.env_fix_btn.pack(side=tk.LEFT)  # 隐藏
 
         # 连接状态
         self.status_label = tk.Label(conn_frame, text="● 未连接", fg="gray", font=("微软雅黑", 9, "bold"))
@@ -1837,6 +1847,84 @@ class SmartAIGUI:
                 traceback.print_exc()
 
         threading.Thread(target=do_auto_fix, daemon=True).start()
+
+    def run_first_aid(self):
+        """运行连接急救箱 - 全面体检 + 针对性修复"""
+        self.log("="*80, "INFO")
+        self.log("🏥 启动连接急救箱...", "INFO")
+        self.log("="*80, "INFO")
+        self.first_aid_btn.config(state=tk.DISABLED)
+
+        def do_first_aid():
+            try:
+                # 创建日志适配器（将GUI的log方法适配为logger接口）
+                class GUILogger:
+                    def __init__(self, log_func):
+                        self.log_func = log_func
+
+                    def info(self, msg):
+                        self.log_func(msg, 'INFO')
+
+                    def warning(self, msg):
+                        self.log_func(msg, 'WARN')
+
+                    def error(self, msg):
+                        self.log_func(msg, 'ERROR')
+
+                    def success(self, msg):
+                        self.log_func(msg, 'SUCCESS')
+
+                # 创建急救箱实例
+                gui_logger = GUILogger(self.log)
+                first_aid = ConnectionFirstAid(
+                    logger=gui_logger,
+                    adb_port=self.port_var.get(),
+                    appium_url="http://127.0.0.1:4723"
+                )
+
+                # 执行完整流程：先体检，后修复
+                udid = f"127.0.0.1:{self.port_var.get()}"
+                report, fix_success = first_aid.diagnose_and_fix(
+                    udid=udid,
+                    auto_fix=True  # 自动修复
+                )
+
+                # 显示最终结果
+                self.log("", "INFO")
+                self.log("="*80, "INFO")
+                self.log("🏥 急救箱处理完成", "INFO")
+                self.log("="*80, "INFO")
+
+                if report.is_healthy:
+                    self.log("✅ 系统状态健康，未发现任何问题！", "SUCCESS")
+                    self.log("", "SUCCESS")
+                    self.log("您可以直接点击'连接设备'按钮进行连接", "SUCCESS")
+                elif fix_success:
+                    self.log("✅ 所有可自动修复的问题已全部修复！", "SUCCESS")
+                    self.log("", "SUCCESS")
+                    if report.has_critical_issues:
+                        self.log("⚠️ 部分严重问题需要手动处理，请查看上方的排查指南", "WARNING")
+                    else:
+                        self.log("现在可以尝试点击'连接设备'按钮", "SUCCESS")
+                else:
+                    self.log("⚠️ 部分问题修复失败，需要手动处理", "WARNING")
+                    self.log("", "WARNING")
+                    self.log("请按照上方显示的排查指南逐步检查和修复", "WARNING")
+
+                self.log("="*80, "INFO")
+
+            except Exception as e:
+                self.log(f"❌ 急救箱运行失败: {e}", "ERROR")
+                import traceback
+                self.log("详细错误信息:", "ERROR")
+                for line in traceback.format_exc().split('\n'):
+                    if line.strip():
+                        self.log(f"  {line}", "ERROR")
+            finally:
+                self.first_aid_btn.config(state=tk.NORMAL)
+
+        # 在后台线程运行
+        threading.Thread(target=do_first_aid, daemon=True).start()
 
     def auto_detect_port(self):
         """自动检测ADB端口"""
